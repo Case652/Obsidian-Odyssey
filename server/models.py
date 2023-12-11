@@ -35,13 +35,45 @@ class Character(db.Model,SerializerMixin):
 
     id = db.Column(db.Integer,primary_key=True)
     character_name = db.Column(db.String,nullable=False)
-    hitpoints = db.Column(db.Integer,default=100)
-    block = db.Column(db.Integer,default=0)
-    mana = db.Column(db.Integer,default=100)
     gold = db.Column(db.Integer,default=500)
+    hitpoints = db.Column(db.Integer,default=100)
+    max_hitpoints = db.Column(db.Integer,default=100)
+    mana = db.Column(db.Integer,default=100)
+    max_mana = db.Column(db.Integer,default=100)
+    block = db.Column(db.Integer,default=0)
     created_at = db.Column(db.DateTime,server_default=db.func.now())
     updated_at = db.Column(db.DateTime,server_default=db.func.now(),onupdate=db.func.now())
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User',back_populates='characters')
-    serialize_rules = ('-user.characters',)
+
+    decks = db.relationship('Deck',back_populates='character')
+    cards = association_proxy('decks','card')
+    serialize_rules = ('-user.characters', '-decks.charcters')
+class Deck(db.Model,SerializerMixin):
+    __tablename__ = 'decks'
+
+    id = db.Column(db.Integer,primary_key=True)
+
+    character_id = db.Column(db.Integer, db.ForeignKey('characters.id'))
+    character = db.relationship('Character',back_populates='decks')
+    card_id = db.Column(db.Integer, db.ForeignKey('cards.id'))
+    card = db.relationship('Card',back_populates='decks')
+
+    serialize_rules = ('-card.decks','-character.decks')
+class Card(db.Model,SerializerMixin):
+    __tablename__ = 'cards'
+    id = db.Column(db.Integer,primary_key=True)
+    card_name = db.Column(db.String,nullable=False)
+    gold_cost = db.Column(db.Integer)
+    mana_cost = db.Column(db.Integer)
+    mana_gain = db.Column(db.Integer)
+    hp_cost = db.Column(db.Integer)
+    damage = db.Column(db.Integer)
+    block = db.Column(db.Integer)
+    heal = db.Column(db.Integer)
+    description = db.Column(db.String)
+    
+    decks = db.relationship('Deck',back_populates='card')
+    characters = association_proxy('decks','character')
+    serialize_rules = ('-decks.card',)

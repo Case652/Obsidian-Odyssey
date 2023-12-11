@@ -24,7 +24,9 @@ class Users(Resource):
         db.session.commit()
         session['user_id'] = user.id
         return make_response({'user':user.to_dict()},201)
-
+    def get(self):
+        all_users = [u.to_dict() for u in User.query.all()]
+        return make_response(all_users)
 api.add_resource(Users,'/api/v1/users')
 
 class Characters(Resource):
