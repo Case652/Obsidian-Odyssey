@@ -54,7 +54,8 @@ class Deck(db.Model,SerializerMixin):
     __tablename__ = 'decks'
 
     id = db.Column(db.Integer,primary_key=True)
-
+    quantity = db.Column(db.Integer, default=1)
+    
     character_id = db.Column(db.Integer, db.ForeignKey('characters.id'))
     character = db.relationship('Character',back_populates='decks')
     card_id = db.Column(db.Integer, db.ForeignKey('cards.id'))
