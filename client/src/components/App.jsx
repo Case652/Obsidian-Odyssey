@@ -9,19 +9,35 @@ function App() {
   const [user,setUser] = useState(null)
   const [signup,setSignup] = useState(false)
   const [selectedCharacter, setSelectedCharacter] = useState(null);
-  useEffect(()=>{
-    fetch('/authorized').then((r)=>{
-      if (r.ok) {
-        r.json().then((user)=> setUser(user))
-      } else if (r.status == 404){
-        navigate('/signup');
-      } else {
-        throw new Error('Unexpected app.jsx.18')
-      }
-    }
-    )
-  },[])
-
+  useEffect(() => {
+    fetch('/authorized')
+      .then((r) => {
+        if (r.ok) {
+          return r.json();
+        } else if (r.status === 404) {
+          navigate('/signup');
+          throw new Error('User not found');
+        } else {
+          throw new Error('Unexpected In Auth');
+        }
+      })
+      .then((user) => {
+        setUser(user);
+        if (user) {
+          fetch('/authCharacter')
+            .then((r) => {
+              if (r.ok) {
+                return r.json();
+              } else {
+                throw new Error('Unexpected In AuthChar');
+              }
+            })
+            .then((character) => setSelectedCharacter(character))
+            .catch((error) => console.error(error));
+        }
+      })
+      .catch((error) => console.error(error));
+  }, [])
   function handleLogout() {
     fetch('/logout',{
       method:'DELETE'

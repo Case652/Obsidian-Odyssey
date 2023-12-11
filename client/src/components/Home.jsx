@@ -7,19 +7,36 @@ import CharacterInfo from "./CharacterInfo";
 
 function Home() {
     const [showCreate,setShowCreate] = useState(false)
-    const {user,setSelectedCharacter, selectedCharacter}= useOutletContext();
+    const {setUser,user,setSelectedCharacter, selectedCharacter}= useOutletContext();
     const charactersArray = user?.characters
     
     const handleCharacterClick = (character) => {
         fetch(`/character/${character.id}`)
-        .then((r)=>{
+        .then((r) => {
             if (r.ok) {
-                r.json().then((character)=> {
-                    setSelectedCharacter(character);
-                })
+                return r.json();
+            } else {
+                throw new Error('Failed to fetch character');
             }
         })
-    }
+        .then((character) => {
+            setSelectedCharacter(character);
+            fetch(`/changeChar`,{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                }, body: JSON.stringify({character_id:character.id}),
+            })
+            .then((r) => {
+                if (!r.ok) {
+                throw new Error('Failed to set session character_id');
+                }
+            })
+            .catch((error) => console.error(error));
+        })
+        .catch((error) => console.error(error));
+    };
+    
     const renderCharacters = charactersArray?.map((character)=>(
         <CharacterCard
             key={character.id}
@@ -48,8 +65,14 @@ function Home() {
             }).then((r)=>{
                 if (r.ok) {
                     r.json().then((character)=>{
+                        setUser((prevUser) => {
+                            return {
+                                ...prevUser,
+                                characters: [...prevUser.characters, character],
+                            };
+                        });
                         setSelectedCharacter(character);
-                        
+                        setShowCreate(!showCreate)
                         //Navigate if i want
                     })
                 } else {
@@ -58,6 +81,28 @@ function Home() {
             })
         },
     });
+    const handleDelete = ()=>{
+        fetch(`/character/${selectedCharacter.id}`,{
+            method:'DELETE',
+            headers:{
+                'Content-Type':'application/json'
+            },
+        }).then((r)=>{
+            if (r.ok) {
+                setUser((prevUser) => {
+                    const updatedCharacters = prevUser.characters.filter((character) => character.id !== selectedCharacter.id);
+                    return {
+                        ...prevUser,
+                        characters: updatedCharacters,
+                    };
+                });
+                setSelectedCharacter(null)
+                console.log('deleted')
+            } else {
+                console.log('failed to delete')
+            }
+        })
+    }
     return(
         <section className="character-container">
             <div>
@@ -84,7 +129,7 @@ function Home() {
                 <h2>Select a character</h2>
                 <div className="character-list">{renderCharacters}</div>
             </div>
-                <CharacterInfo selectedCharacter={selectedCharacter}/>
+                <CharacterInfo selectedCharacter={selectedCharacter} handleDelete={handleDelete}/>
         </section>
     );
 }
