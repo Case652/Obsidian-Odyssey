@@ -40,6 +40,7 @@ class Character(db.Model,SerializerMixin):
     max_hitpoints = db.Column(db.Integer,default=100)
     mana = db.Column(db.Integer,default=100)
     max_mana = db.Column(db.Integer,default=100)
+    draw = db.Column(db.Integer,default=5)
     block = db.Column(db.Integer,default=0)
     created_at = db.Column(db.DateTime,server_default=db.func.now())
     updated_at = db.Column(db.DateTime,server_default=db.func.now(),onupdate=db.func.now())
@@ -74,6 +75,8 @@ class Card(db.Model,SerializerMixin):
     block = db.Column(db.Integer)
     heal = db.Column(db.Integer)
     description = db.Column(db.String)
+    created_at = db.Column(db.DateTime,server_default=db.func.now())
+    updated_at = db.Column(db.DateTime,server_default=db.func.now(),onupdate=db.func.now())
     
     decks = db.relationship('Deck',back_populates='card')
     characters = association_proxy('decks','character')

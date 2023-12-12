@@ -1,8 +1,8 @@
-"""init
+"""Init
 
-Revision ID: 7153c4b0dd0a
+Revision ID: fd579171e7de
 Revises: 
-Create Date: 2023-12-11 15:55:58.411405
+Create Date: 2023-12-12 00:21:27.440634
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7153c4b0dd0a'
+revision = 'fd579171e7de'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -29,6 +29,8 @@ def upgrade():
     sa.Column('block', sa.Integer(), nullable=True),
     sa.Column('heal', sa.Integer(), nullable=True),
     sa.Column('description', sa.String(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
@@ -48,6 +50,7 @@ def upgrade():
     sa.Column('max_hitpoints', sa.Integer(), nullable=True),
     sa.Column('mana', sa.Integer(), nullable=True),
     sa.Column('max_mana', sa.Integer(), nullable=True),
+    sa.Column('draw', sa.Integer(), nullable=True),
     sa.Column('block', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
@@ -57,9 +60,10 @@ def upgrade():
     )
     op.create_table('decks',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('quantity', sa.Integer(), nullable=True),
     sa.Column('character_id', sa.Integer(), nullable=True),
     sa.Column('card_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['card_id'], ['characters.id'], name=op.f('fk_decks_card_id_characters')),
+    sa.ForeignKeyConstraint(['card_id'], ['cards.id'], name=op.f('fk_decks_card_id_cards')),
     sa.ForeignKeyConstraint(['character_id'], ['characters.id'], name=op.f('fk_decks_character_id_characters')),
     sa.PrimaryKeyConstraint('id')
     )
