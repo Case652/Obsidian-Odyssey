@@ -1,6 +1,6 @@
 
 function CharacterInfo({selectedCharacter,handleDelete}) {
-    const {character_name,hitpoints,mana,gold,id} = selectedCharacter || {};
+    const {character_name,hitpoints,max_hitpoints,mana,max_mana,gold,draw,id,decks} = selectedCharacter || {};
     return(
         <div className="selected-character">
             {selectedCharacter ? (
@@ -8,8 +8,13 @@ function CharacterInfo({selectedCharacter,handleDelete}) {
                     <h2>{character_name}</h2>
                     <p>Gold:{gold}</p>
                     <img src='character1.png' alt='display-character'></img>
-                    <p>{hitpoints}/MaxHitpoints</p>
-                    <p>{mana}/MaxMana</p>
+                    <div className="😭">
+                        <p className="hp">{hitpoints}/{max_hitpoints} Hp</p>
+                        <p className="mana">{mana}/{max_mana} Mana</p>
+                    </div>
+                    
+                    <p>{draw} Draw</p>
+                    <p>{decks.length} Cards in Deck</p>
                     <button onClick={handleDelete}>Delete Character</button>
                 </>
             ) : (

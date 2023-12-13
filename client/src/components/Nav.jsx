@@ -1,7 +1,5 @@
 
-
-
-function Nav({handleLogout, user,selectedCharacter}) {
+function Nav({handleLogout, user,selectedCharacter,navigate}) {
     const {character_name} = selectedCharacter || {};
 
     return(
@@ -14,7 +12,8 @@ function Nav({handleLogout, user,selectedCharacter}) {
                     </div>
                 </div>
                 <ul className="nav-ul">
-                    <li className="nav-li"><img className='nav-img' src='Settings.jpg' alt='settings'/><p className="nav-p">stuff added here</p></li>
+                    <li className="nav-li" onClick={()=>navigate('/')}><img className='nav-img' src='Settings.jpg' alt='settings' /><p className="nav-p">Home</p></li>
+                    <li className="nav-li" onClick={()=>navigate('/battle')}><img className='nav-img' src='Settings.jpg' alt='settings' /><p className="nav-p">Battle</p></li>
                     <li className="nav-li"><img className='nav-img' src='logo192.png' alt='links png'/><p className="nav-p">stuff added here</p></li>
                 </ul>
                 {user && (

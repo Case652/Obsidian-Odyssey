@@ -57,12 +57,12 @@ function App() {
     selectedCharacter,
     setSelectedCharacter,
   }
-  return <>
+  return (
     <div className="App">
-      <Nav handleLogout={handleLogout} user={user} selectedCharacter={selectedCharacter}/>
+      <Nav handleLogout={handleLogout} user={user} selectedCharacter={selectedCharacter} navigate={navigate}/>
       <Outlet context={context}/>
     </div>
-  </>
+  )
 }
 
 export default App;

@@ -2,7 +2,6 @@
 
 function ErrorPage() {
 
-
     return(
         <div>
             Ope! Something went wrong!
