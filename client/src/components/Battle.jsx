@@ -7,6 +7,12 @@ function Battle() {
     const cardsPerRow = 3
     const rows = []
 
+    
+
+
+
+
+
     const renderCards = cardsArray?.map((cards, index)=>(
         <Card
             key={selectedCharacter.decks.id}

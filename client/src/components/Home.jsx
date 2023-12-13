@@ -108,54 +108,59 @@ function Home() {
     });
 
     const handleDelete = ()=>{
-        fetch(`/character/${selectedCharacter.id}`,{
-            method:'DELETE',
-            headers:{
-                'Content-Type':'application/json'
-            },
-        }).then((r)=>{
-            if (r.ok) {
-                setUser((prevUser) => {
-                    const updatedCharacters = prevUser.characters.filter((character) => character.id !== selectedCharacter.id);
-                    return {
-                        ...prevUser,
-                        characters: updatedCharacters,
-                    };
-                });
-                setSelectedCharacter(null)
-                console.log('deleted')
-            } else {
-                console.log('failed to delete')
-            }
-        })
+        const isConfirmed = window.confirm(`Are you sure?\n ${selectedCharacter.character_name}\n Will be deleted forever.`)
+
+        if (isConfirmed) {
+            fetch(`/character/${selectedCharacter.id}`,{
+                method:'DELETE',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+            }).then((r)=>{
+                if (r.ok) {
+                    setUser((prevUser) => {
+                        const updatedCharacters = prevUser.characters.filter((character) => character.id !== selectedCharacter.id);
+                        return {
+                            ...prevUser,
+                            characters: updatedCharacters,
+                        };
+                    });
+                    setSelectedCharacter(null)
+                    console.log('deleted')
+                } else {
+                    console.log('failed to delete')
+                }
+            })
+        } else {
+            console.log('no character deleted.')
+        }
     }
 
     return(
         <section className="character-container">
-            <CharacterInfo selectedCharacter={selectedCharacter} handleDelete={handleDelete}/>
+            {showCreate ? (
+                <form className="selected-character" onSubmit={formik.handleSubmit}>
+                    <div className='box-input'>
+                        <input
+                            type="text"
+                            id="character_name"
+                            name="character_name"
+                            value={formik.values.character_name}
+                            onChange={formik.handleChange}
+                            required
+                            placeholder=' '
+                        />
+                        <label htmlFor="character_name" >Character Name</label>
+                    </div>
+                    <button className='login-button' type="submit">Create</button>
+                    
+                </form>
+                ) : (
+                <CharacterInfo selectedCharacter={selectedCharacter} handleDelete={handleDelete}/>
+            )}
             <div className="😭">
-                <div className="🥺">
-                    <button onClick={handleButtonForm}>Create a new character</button>
-                    {showCreate && (
-                        <form onSubmit={formik.handleSubmit}>
-                            <div className='box-input'>
-                                <input
-                                    type="text"
-                                    id="character_name"
-                                    name="character_name"
-                                    value={formik.values.character_name}
-                                    onChange={formik.handleChange}
-                                    required
-                                    placeholder=' '
-                                />
-                                <label htmlFor="character_name" >Character Name</label>
-                            </div>
-                            <button className='login-button' type="submit">Create</button>
-                        </form>
-                    )}
-                </div>
-                <h2 className="🥺">Please Select A Character</h2>
-                <div className="🥺">Delete Selected</div>
+                {showCreate ?(<button onClick={handleButtonForm} className="🥺">I've changed my mind</button>):(<button  className="🥺" onClick={handleButtonForm}>Create a new character</button>)}
+                {selectedCharacter ? (<button className="🥺" onClick={handleDelete}>Delete Current Character</button>) :(<h2 className="🥺">Please Select A Character</h2>)}
             </div>
             <div className="slide-wrapper">
                 <p className="slide-back" onClick={handleSlideBack}>Scroll Back</p>

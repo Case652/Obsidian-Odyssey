@@ -44,6 +44,7 @@ function App() {
     }).then((r)=>{
       if (r.ok) {
         setUser(null)
+        setSelectedCharacter(null)
         navigate('/signup')
       }
     })

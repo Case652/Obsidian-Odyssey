@@ -1,5 +1,5 @@
 
-function CharacterInfo({selectedCharacter,handleDelete}) {
+function CharacterInfo({selectedCharacter}) {
     const {character_name,hitpoints,max_hitpoints,mana,max_mana,gold,draw,id,decks} = selectedCharacter || {};
     return(
         <div className="selected-character">
@@ -12,10 +12,8 @@ function CharacterInfo({selectedCharacter,handleDelete}) {
                         <p className="hp">{hitpoints}/{max_hitpoints} Hp</p>
                         <p className="mana">{mana}/{max_mana} Mana</p>
                     </div>
-                    
                     <p>{draw} Draw</p>
                     <p>{decks.length} Cards in Deck</p>
-                    <button onClick={handleDelete}>Delete Character</button>
                 </>
             ) : (
             <h2>No character selected</h2>
