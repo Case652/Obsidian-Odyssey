@@ -10,6 +10,7 @@ from flask_restful import Resource
 from config import app, db, api
 # Add your model imports
 from models import User, Character,Deck,Card
+from seed import starter_deck
 
 # Views go here!
 class Users(Resource):
@@ -31,7 +32,16 @@ api.add_resource(Users,'/api/v1/users')
 
 class Characters(Resource):
     def get(self):
-        all_characters = [c.to_dict(rules={'-user',}) for c in Character.query.all()]
+        all_characters = [c.to_dict(rules={
+            #general rules
+            '-user',
+            #deck rules
+            '-decks.card_id',
+            '-decks.character_id',
+            #card rules
+            # "-decks.card.created_at",
+            # "-decks.card.updated_at",
+            }) for c in Character.query.all()]
         return make_response(all_characters)
 
     def post(self):
@@ -39,9 +49,17 @@ class Characters(Resource):
         user_id = session.get('user_id')
         if not user_id:
             return make_response({'error': 'User not logged in'}, 401)
+
         character = Character(character_name=data['character_name'],user_id=user_id)
         db.session.add(character)
         db.session.commit()
+
+        for card_info in starter_deck:
+            card_id = card_info["card_id"]
+            deck = Deck(character_id=character.id, card_id=card_id)
+            db.session.add(deck)
+        db.session.commit()
+
         session['character_id'] = character.id
         return make_response(character.to_dict(rules={'-user',}),201)
 

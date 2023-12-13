@@ -50,12 +50,12 @@ class Character(db.Model,SerializerMixin):
 
     decks = db.relationship('Deck',back_populates='character')
     cards = association_proxy('decks','card')
-    serialize_rules = ('-user.characters', '-decks.charcters')
+    serialize_rules = ('-user.characters', '-decks.character')
 class Deck(db.Model,SerializerMixin):
     __tablename__ = 'decks'
 
     id = db.Column(db.Integer,primary_key=True)
-    quantity = db.Column(db.Integer, default=1)
+    # quantity = db.Column(db.Integer, default=1) for shorter database, rework tons of code.
     
     character_id = db.Column(db.Integer, db.ForeignKey('characters.id'))
     character = db.relationship('Character',back_populates='decks')

@@ -10,7 +10,21 @@ from faker import Faker
 from app import app
 from models import db, User, Character,Deck,Card
 
-
+starter_deck = [
+    {"card_id": 1},
+    {"card_id": 1},
+    {"card_id": 2},
+    {"card_id": 2},
+    {"card_id": 3},
+    {"card_id": 3},
+    {"card_id": 4},
+    {"card_id": 5},
+    {"card_id": 5},
+    {"card_id": 5},
+    {"card_id": 6},
+    {"card_id": 6},
+    {"card_id": 6},
+]
 
 
 if __name__ == '__main__':
@@ -24,6 +38,7 @@ if __name__ == '__main__':
         db.session.commit()
         print("Starting seed...")
         # Seed code goes here!
+        print('Seeding Cards...')
         cards_to_commit = [
             Card(
                 card_name="Magic Bolt",
