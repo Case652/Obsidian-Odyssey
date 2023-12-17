@@ -9,7 +9,7 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api
 # Add your model imports
-from models import User, Character,Deck,Card
+from models import User, Character,Deck,Card,CardType,MobDeck,Mob,Fight
 from seed import starter_deck
 
 # Views go here!
@@ -55,9 +55,11 @@ class Characters(Resource):
         db.session.commit()
 
         for card_info in starter_deck:
-            card_id = card_info["card_id"]
-            deck = Deck(character_id=character.id, card_id=card_id)
-            db.session.add(deck)
+            card_name = card_info["card_name"]
+            card = Card.query.filter_by(card_name=card_name).first()
+            if card:
+                deck = Deck(character_id=character.id, card_id=card.id)
+                db.session.add(deck)
         db.session.commit()
 
         session['character_id'] = character.id
@@ -86,9 +88,33 @@ class CharacterById(Resource):
         return make_response("Can't see me",204)
 
 api.add_resource(CharacterById,'/api/v1/character/<id>')
+class CharacterFightById(Resource):
+    def get(self,id):
+        character = Character.query.get(id)
+        if not character:
+            return make_response({"error": "No character found"}, 404)
+        ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
 
+        if not ongoing_fight:
+            new_fight = Fight(character=character)
+            db.session.add(new_fight)
+            db.session.commit()
+            character.draw_hand()
+            return make_response(new_fight.to_dict(rules={'-character.user'}), 201)
+        else:
+            return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)
+
+api.add_resource(CharacterFightById,'/api/v1/fight/<id>')
+
+class Fights(Resource):
+    def get(self):
+        all_fights = [f.to_dict(rules={
+            #general rules
+            '-character.user',
+            }) for f in Fight.query.all()]
+        return make_response(all_fights)
+api.add_resource(Fights,'/api/v1/fight')
 @app.route('/api/v1/login',methods=['POST'])
-
 def login():
     data = request.get_json()
     try:
