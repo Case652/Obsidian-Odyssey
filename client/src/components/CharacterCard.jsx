@@ -1,10 +1,13 @@
 
 function CharacterCard({character,handleClick}) {
+
     const {character_name} = character
+    
     return(
-        <div className="character-card" onClick={()=>handleClick(character)}>
+        <span className="character-card" onClick={()=>handleClick(character)}>
             <h2>{character_name}</h2>
-        </div>
+            <h2>Lv?</h2>
+        </span>
     );
 }
 export default CharacterCard;
