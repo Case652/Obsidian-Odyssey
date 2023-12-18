@@ -5,9 +5,9 @@ import {useState } from 'react';
 import CharacterCard from "./CharacterCard";
 import CharacterInfo from "./CharacterInfo";
 
-function Home() {
+function CharacterSelection() {
     const [showCreate,setShowCreate] = useState(false)
-    const {setUser,user,setSelectedCharacter, selectedCharacter}= useOutletContext();
+    const {setUser,user,setSelectedCharacter, selectedCharacter,navigate}= useOutletContext();
     const charactersArray = user?.characters
     const charactersPerRow = 4
     const rows = []
@@ -22,6 +22,7 @@ function Home() {
             }
         })
         .then((character) => {
+            console.log(character)
             setSelectedCharacter(character);
             fetch(`/changeChar`,{
                 method:'POST',
@@ -135,7 +136,9 @@ function Home() {
             console.log('no character deleted.')
         }
     }
-
+    const handleUnSelect = ()=> {
+        setSelectedCharacter(null)
+    }
     return(
         <section className="character-container">
             {showCreate ? (
@@ -159,8 +162,10 @@ function Home() {
                 <CharacterInfo selectedCharacter={selectedCharacter} handleDelete={handleDelete}/>
             )}
             <div className="😭">
+                {selectedCharacter && (<button className="🥺" onClick={()=>navigate('/town')}>Go To Town</button>)}
                 {showCreate ?(<button onClick={handleButtonForm} className="🥺">I've changed my mind</button>):(<button  className="🥺" onClick={handleButtonForm}>Create a new character</button>)}
                 {selectedCharacter ? (<button className="🥺" onClick={handleDelete}>Delete Current Character</button>) :(<h2 className="🥺">Please Select A Character</h2>)}
+                {selectedCharacter && (<button className="🥺" onClick={handleUnSelect}>Unselect Current Character</button>)}
             </div>
             <div className="slide-wrapper">
                 <p className="slide-back" onClick={handleSlideBack}>Scroll Back</p>
@@ -173,4 +178,4 @@ function Home() {
         </section>
     );
 }
-export default Home;
+export default CharacterSelection;

@@ -1,21 +1,18 @@
+import { useState, useEffect } from 'react';
 import {useOutletContext} from "react-router-dom";
 import Card from "./Card";
+import MobInfo from './MobInfo';
 import CharacterInfo from "./CharacterInfo";
 function Battle() {
-    const {selectedCharacter} = useOutletContext();
+    const {selectedCharacter,setSelectedCharacter} = useOutletContext();
+    const [ongoingFight, setOngoingFight] = useState(null);
     const cardsArray = selectedCharacter?.decks
     const cardsPerRow = 3
     const rows = []
-
-    
-
-
-
-
-
-    const renderCards = cardsArray?.map((cards, index)=>(
+    const renderCards = cardsArray?.filter((card) => card.status === 'Drawn').map((card, index)=>(
         <Card
-            key={selectedCharacter.decks.id}
+            key={card.id}
+            card={card}
         />
     ))
 
@@ -39,6 +36,33 @@ function Battle() {
         slide.scrollLeft += 900
     }
 
+    useEffect(()=>{
+        if (selectedCharacter && selectedCharacter.id) {
+            fetch(`/fight/${selectedCharacter.id}`)
+            .then((r)=>{
+                if (r.ok) {
+                    console.log('Fight is ongoing')
+                    return r.json();
+                } else if (r.status === 201) {
+                    console.log('Created a new fight')
+                    return r.json();
+                } else if(r.status === 404) {
+                    console.log('Character not found')
+                    return null;
+                } else {
+                    throw new Error('Somthing is unexpected wrong')
+                }
+            }).then((fight)=>{
+                console.log(fight.character)
+                if (fight !== null) {
+                    setSelectedCharacter(fight.character)
+                    setOngoingFight(fight);
+                }
+            }).catch((error) =>{
+                console.error('error fetching fight',error)
+            })
+        }
+    },[selectedCharacter?.id])
     return(
         <section className="character-container">
             <div className="😭">
@@ -46,7 +70,7 @@ function Battle() {
                     <CharacterInfo selectedCharacter={selectedCharacter}/>
                 </div>
                 <div className="battle-right">
-                    <CharacterInfo selectedCharacter={selectedCharacter}/>
+                    <MobInfo ongoingFight={ongoingFight}/>
                 </div>
             </div>
             <div className="slide-wrapper">

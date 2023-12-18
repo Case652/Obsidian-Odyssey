@@ -12,8 +12,9 @@ function Nav({handleLogout, user,selectedCharacter,navigate}) {
                     </div>
                 </div>
                 <ul className="nav-ul">
-                    <li className="nav-li" onClick={()=>navigate('/')}><img className='nav-img' src='Settings.jpg' alt='settings' /><p className="nav-p">Home</p></li>
-                    <li className="nav-li" onClick={()=>navigate('/battle')}><img className='nav-img' src='Settings.jpg' alt='settings' /><p className="nav-p">Battle</p></li>
+                    {user && <li className="nav-li" onClick={()=>navigate('/')}><img className='nav-img' src='Settings.jpg' alt='settings' /><p className="nav-p">Character Selection</p></li>}
+                    {selectedCharacter &&<li className="nav-li" onClick={()=>navigate('/battle')}><img className='nav-img' src='Settings.jpg' alt='settings' /><p className="nav-p">Battle</p></li>}
+                    {selectedCharacter &&<li className="nav-li" onClick={()=>navigate('/town')}><img className='nav-img' src='Settings.jpg' alt='settings' /><p className="nav-p">Town</p></li>}
                     <li className="nav-li"><img className='nav-img' src='logo192.png' alt='links png'/><p className="nav-p">stuff added here</p></li>
                     
                 </ul>

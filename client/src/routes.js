@@ -1,8 +1,9 @@
 import App from "./components/App";
 import ErrorPage from "./components/ErrorPage";
-import Home from "./components/Home";
 import Signup from "./components/Signup";
 import Battle from "./components/Battle";
+import CharacterSelection from "./components/CharacterSelection";
+import Town from "./components/Town";
 const routes = [
     {
         path: "/",
@@ -11,7 +12,7 @@ const routes = [
         children: [
             {
                 path: "/",
-                element: <Home />
+                element: <CharacterSelection />
             },
             {
                 path:"signup",
@@ -20,6 +21,10 @@ const routes = [
             {
                 path:"battle",
                 element: <Battle />
+            },
+            {
+                path:"town",
+                element: <Town />
             }
         ]
     }
