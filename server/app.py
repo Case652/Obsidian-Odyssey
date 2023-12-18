@@ -11,7 +11,7 @@ from config import app, db, api
 # Add your model imports
 from models import User, Character,Deck,Card,CardType,MobDeck,Mob,Fight
 from seed import starter_deck
-
+from random import randint
 # Views go here!
 class Users(Resource):
     def post(self):
@@ -96,16 +96,25 @@ class CharacterFightById(Resource):
         ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
     # def post
         if not ongoing_fight:
+            all_mobs = Mob.query.all()
+            random_index = randint(0,len(all_mobs) - 1)
+            random_mob = all_mobs[random_index]
             new_fight = Fight(character=character)
+            new_fight.mob_name = random_mob.mob_name
+            new_fight.level = random_mob.level
+            new_fight.hitpoints = random_mob.hitpoints
+            new_fight.max_hitpoints = random_mob.max_hitpoints
+            new_fight.mana = random_mob.mana
+            new_fight.max_mana = random_mob.max_mana
+            new_fight.draw = random_mob.draw
+            new_fight.block = random_mob.block
 
-            
             db.session.add(new_fight)
-            db.session.commit()
             character.draw_hand()
+            db.session.commit()
             return make_response(new_fight.to_dict(rules={'-character.user'}), 201)
         else:
             return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)
-
 api.add_resource(CharacterFightById,'/api/v1/fight/<id>')
 
 class Fights(Resource):
@@ -116,6 +125,42 @@ class Fights(Resource):
             }) for f in Fight.query.all()]
         return make_response(all_fights)
 api.add_resource(Fights,'/api/v1/fight')
+
+class PlayCardById(Resource):
+    def get(self,id):
+        character_id = session.get('character_id')
+        deck = Deck.query.filter_by(card_id=id, character_id=character_id, status='Drawn').first()
+        if deck:
+            card = deck.card
+            character = Character.query.filter_by(id=character_id).first()
+            ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
+            if ongoing_fight:
+                if character.mana >= card.mana_cost and character.hitpoints >= card.hp_cost:
+                    character.mana -= card.mana_cost
+                    character.hitpoints -= card.hp_cost
+                    character.hitpoints += card.heal
+                    max_mana = character.max_mana
+                    character.mana = min(character.mana + card.mana_gain, max_mana)
+                    character.block += card.block
+
+                    mob_damage = card.damage
+                    if ongoing_fight.block > 0:
+                        block_damage = min(ongoing_fight.block, mob_damage)
+                        ongoing_fight.block -= block_damage
+                        mob_damage -= block_damage
+                    if mob_damage > 0:
+                        ongoing_fight.hitpoints -= mob_damage
+                    deck.status = 'Discarded'
+                    db.session.commit()
+                    return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)
+                else:
+                    return make_response({"error": "Not enough mana or hitpoints to play this card"}, 400)
+            else:
+                return make_response({"error": "No onGoing fight"},418)
+        else:
+            return make_response({"error":"Character does not have this Drawn"},404)
+api.add_resource(PlayCardById,'/api/v1/PlayCard/<id>')
+
 @app.route('/api/v1/login',methods=['POST'])
 def login():
     data = request.get_json()

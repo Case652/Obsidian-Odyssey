@@ -1,8 +1,8 @@
-"""init
+"""init2
 
-Revision ID: 4d13249a80a1
+Revision ID: 2ac1fa72ced2
 Revises: 
-Create Date: 2023-12-16 20:00:35.102994
+Create Date: 2023-12-17 18:39:52.000606
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '4d13249a80a1'
+revision = '2ac1fa72ced2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,6 +40,7 @@ def upgrade():
     )
     op.create_table('mobs',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('level', sa.Integer(), nullable=True),
     sa.Column('mob_name', sa.String(), nullable=False),
     sa.Column('hitpoints', sa.Integer(), nullable=True),
     sa.Column('max_hitpoints', sa.Integer(), nullable=True),
@@ -99,6 +100,14 @@ def upgrade():
     sa.Column('status', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.Column('mob_name', sa.String(), nullable=False),
+    sa.Column('level', sa.String(), nullable=True),
+    sa.Column('hitpoints', sa.Integer(), nullable=True),
+    sa.Column('max_hitpoints', sa.Integer(), nullable=True),
+    sa.Column('mana', sa.Integer(), nullable=True),
+    sa.Column('max_mana', sa.Integer(), nullable=True),
+    sa.Column('draw', sa.Integer(), nullable=True),
+    sa.Column('block', sa.Integer(), nullable=True),
     sa.Column('character_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['character_id'], ['characters.id'], name=op.f('fk_fights_character_id_characters')),
     sa.PrimaryKeyConstraint('id')
