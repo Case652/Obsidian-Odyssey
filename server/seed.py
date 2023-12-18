@@ -8,7 +8,7 @@ from faker import Faker
 
 # Local imports
 from app import app
-from models import db, User, Character,Deck,Card,Mob,MobDeck
+from models import db, User, Character,Deck,Card,Mob,MobDeck,Fight,InFightMobDeck
 
 starter_deck = [
     {"card_name": "Magic Bolt"},
@@ -36,6 +36,8 @@ if __name__ == '__main__':
         Card.query.delete()
         Mob.query.delete()
         MobDeck.query.delete()
+        Fight.query.delete()
+        InFightMobDeck.query.delete()
         db.session.commit()
         print("Starting seed...")
         # Seed code goes here!

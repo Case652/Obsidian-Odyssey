@@ -9,7 +9,7 @@ from flask_restful import Resource
 # Local imports
 from config import app, db, api
 # Add your model imports
-from models import User, Character,Deck,Card,CardType,MobDeck,Mob,Fight
+from models import User, Character,Deck,Card,CardType,MobDeck,Mob,Fight,InFightMobDeck
 from seed import starter_deck
 from random import randint
 # Views go here!
@@ -108,8 +108,14 @@ class CharacterFightById(Resource):
             new_fight.max_mana = random_mob.max_mana
             new_fight.draw = random_mob.draw
             new_fight.block = random_mob.block
-
             db.session.add(new_fight)
+            db.session.commit()
+            mob_decks = MobDeck.query.filter_by(mob=random_mob).all()
+            for mob_deck in mob_decks:
+                new_mob_deck = InFightMobDeck(status='Undrawn', fight=new_fight, card_id=mob_deck.card_id)
+                db.session.add(new_mob_deck)
+                db.session.commit()
+            new_fight.draw_hand()
             character.draw_hand()
             db.session.commit()
             return make_response(new_fight.to_dict(rules={'-character.user'}), 201)
@@ -135,10 +141,11 @@ class PlayCardById(Resource):
             character = Character.query.filter_by(id=character_id).first()
             ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
             if ongoing_fight:
-                if character.mana >= card.mana_cost and character.hitpoints >= card.hp_cost:
+                if character.mana >= card.mana_cost and character.hitpoints > card.hp_cost:
                     character.mana -= card.mana_cost
                     character.hitpoints -= card.hp_cost
-                    character.hitpoints += card.heal
+                    max_hitpoints = character.max_hitpoints
+                    character.hitpoints = min(character.hitpoints + card.heal, max_hitpoints)
                     max_mana = character.max_mana
                     character.mana = min(character.mana + card.mana_gain, max_mana)
                     character.block += card.block
@@ -150,6 +157,11 @@ class PlayCardById(Resource):
                         mob_damage -= block_damage
                     if mob_damage > 0:
                         ongoing_fight.hitpoints -= mob_damage
+                        if ongoing_fight.hitpoints <= 0:
+                            ongoing_fight.status = 'Victory'
+                            character.shuffle_deck_all()
+                            # finish fight somehow
+                            pass
                     deck.status = 'Discarded'
                     db.session.commit()
                     return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)

@@ -1,5 +1,5 @@
 
-function Card({card}) {
+function Card({card,setOngoingFight,setSelectedCharacter}) {
     const {id,card_name,gold_cost,mana_cost,mana_gain,hp_cost,damage,block,heal,description} = card.card || {};
     console.log(card.card)
     const formattedDescription = description
@@ -12,6 +12,18 @@ function Card({card}) {
     const renderDescription = { __html: formattedDesc };
     const handlePlayCard = ()=> {
         fetch(`/PlayCard/${id}`)
+        .then((r)=>{
+            if (r.ok){
+            return r.json();
+            } else {throw new Error('Somthing is unexpected wrong')}
+        }).then((fight)=>{
+            if (fight !== null) {
+                setSelectedCharacter(fight.character)
+                setOngoingFight(fight);
+            }
+        }).catch((error) =>{
+            console.error('error fetching fight',error)
+        })
     }
     return(
         <span className="card" onClick={handlePlayCard}>

@@ -1,6 +1,7 @@
-
+import { useLocation } from 'react-router-dom';
 function CharacterInfo({selectedCharacter}) {
-    const {character_name,hitpoints,max_hitpoints,mana,max_mana,gold,draw,id,decks} = selectedCharacter || {};
+    const {character_name,hitpoints,max_hitpoints,mana,max_mana,gold,draw,id,decks,block} = selectedCharacter || {};
+    const location = useLocation();
     return(
         <div className="selected-character">
             {selectedCharacter ? (
@@ -12,6 +13,7 @@ function CharacterInfo({selectedCharacter}) {
                         <p className="hp">{hitpoints}/{max_hitpoints} Hp</p>
                         <p className="mana">{mana}/{max_mana} Mana</p>
                     </div>
+                    {location.pathname === '/battle' && <p>Blocking {block}</p>}
                     <p>{draw} Draw</p>
                     <p>{decks.length} Cards in Deck</p>
                 </>

@@ -24,6 +24,7 @@ function CharacterSelection() {
         .then((character) => {
             console.log(character)
             setSelectedCharacter(character);
+            setShowCreate(false)
             fetch(`/changeChar`,{
                 method:'POST',
                 headers:{
@@ -69,6 +70,7 @@ function CharacterSelection() {
     }
 
     function handleButtonForm(){
+        setSelectedCharacter(null)
         setShowCreate(!showCreate)
     }
 

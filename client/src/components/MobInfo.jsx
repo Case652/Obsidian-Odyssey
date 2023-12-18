@@ -1,6 +1,6 @@
 
 function MobInfo({ongoingFight}) {
-    const {mob_name,hitpoints,max_hitpoints,mana,max_mana,draw,id,decks} = ongoingFight || {};
+    const {mob_name,hitpoints,max_hitpoints,mana,max_mana,draw,id,in_fight_mob_decks} = ongoingFight || {};
     return(
         <div className="selected-character">
             {ongoingFight ? (

@@ -13,6 +13,8 @@ function Battle() {
         <Card
             key={card.id}
             card={card}
+            setSelectedCharacter={setSelectedCharacter}
+            setOngoingFight={setOngoingFight}
         />
     ))
 
@@ -63,6 +65,9 @@ function Battle() {
             })
         }
     },[selectedCharacter?.id])
+    const handleEndTurn=()=>{
+        console.log("fetch to end turn")
+    }
     return(
         <section className="character-container">
             <div className="😭">
