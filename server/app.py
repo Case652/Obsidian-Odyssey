@@ -94,9 +94,11 @@ class CharacterFightById(Resource):
         if not character:
             return make_response({"error": "No character found"}, 404)
         ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
-
+    # def post
         if not ongoing_fight:
             new_fight = Fight(character=character)
+
+            
             db.session.add(new_fight)
             db.session.commit()
             character.draw_hand()

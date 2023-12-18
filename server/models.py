@@ -35,7 +35,14 @@ class Character(db.Model,SerializerMixin):
 
     id = db.Column(db.Integer,primary_key=True)
     character_name = db.Column(db.String,nullable=False)
+
+    # level = db.Column(db.Integer,default=1)
+    # experience = db.Column(db.Integer,default=0)
+    # experience_cap = db.Column(db.Integer,default=100)
+    # skill_point = db.Column(db.Integer,default=0)
+
     gold = db.Column(db.Integer,default=500)
+
     hitpoints = db.Column(db.Integer,default=100)
     max_hitpoints = db.Column(db.Integer,default=100)
     mana = db.Column(db.Integer,default=100)
@@ -165,14 +172,14 @@ class MobDeck(db.Model,SerializerMixin):
 class Mob(db.Model, SerializerMixin):
     __tablename__ = 'mobs'
     id = db.Column(db.Integer,primary_key=True)
-
+    level = db.Column(db.Integer,default=1)
     mob_name = db.Column(db.String,nullable=False)
     # gold = db.Column(db.Integer,default=500)
     hitpoints = db.Column(db.Integer,default=100)
     max_hitpoints = db.Column(db.Integer,default=100)
     mana = db.Column(db.Integer,default=100)
     max_mana = db.Column(db.Integer,default=100)
-    draw = db.Column(db.Integer,default=5)
+    draw = db.Column(db.Integer,default=1)
     block = db.Column(db.Integer,default=0)
     created_at = db.Column(db.DateTime,server_default=db.func.now())
     updated_at = db.Column(db.DateTime,server_default=db.func.now(),onupdate=db.func.now())
@@ -190,6 +197,16 @@ class Fight(db.Model,SerializerMixin):
     created_at = db.Column(db.DateTime,server_default=db.func.now())
     updated_at = db.Column(db.DateTime,server_default=db.func.now(),onupdate=db.func.now())
     #enemy Stats, not the ID because no cheese
+
+    mob_name = db.Column(db.String,nullable=False)
+    level = db.Column(db.String,default=1)
+    hitpoints = db.Column(db.Integer,default=100)
+    max_hitpoints = db.Column(db.Integer,default=100)
+    mana = db.Column(db.Integer,default=100)
+    max_mana = db.Column(db.Integer,default=100)
+    draw = db.Column(db.Integer,default=1)
+    block = db.Column(db.Integer,default=0)
+
     #a character ID
     character_id = db.Column(db.Integer, db.ForeignKey('characters.id'))
     character = db.relationship('Character',back_populates='fights')
