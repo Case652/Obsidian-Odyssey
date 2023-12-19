@@ -5,13 +5,14 @@
 # Remote library imports
 from flask import request, make_response, session
 from flask_restful import Resource
-
+from sqlalchemy import or_
+from random import randint,choice
 # Local imports
 from config import app, db, api
 # Add your model imports
-from models import User, Character,Deck,Card,CardType,MobDeck,Mob,Fight,InFightMobDeck
+from models import User, Character,Deck,Card,CardType,MobDeck,Mob,Fight,InFightMobDeck,LevelChart
 from seed import starter_deck
-from random import randint
+
 # Views go here!
 class Users(Resource):
     def post(self):
@@ -96,10 +97,13 @@ class CharacterFightById(Resource):
         ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
     # def post
         if not ongoing_fight:
-            all_mobs = Mob.query.all()
-            random_index = randint(0,len(all_mobs) - 1)
-            random_mob = all_mobs[random_index]
+            available_mobs = Mob.query.filter(or_(Mob.level == character.level, Mob.level < character.level)).all()
+            if not available_mobs:
+                return make_response({"error": "No suitable mob found for the character's level"}, 404)
+            random_mob = choice(available_mobs)
+
             new_fight = Fight(character=character)
+            
             new_fight.mob_name = random_mob.mob_name
             new_fight.level = random_mob.level
             new_fight.hitpoints = random_mob.hitpoints
@@ -159,9 +163,29 @@ class PlayCardById(Resource):
                         ongoing_fight.hitpoints -= mob_damage
                         if ongoing_fight.hitpoints <= 0:
                             ongoing_fight.status = 'Victory'
+                            victory_gold = ongoing_fight.max_hitpoints // 2
+                            victory_experience = ongoing_fight.max_hitpoints
+                            character.experience += victory_experience
+                            character.gold += victory_gold
+                            db.session.commit()
+                            if character.experience >= character.experience_cap:
+                                character.level += 1
+                                character.experience = 0
+                                character.skill_point += 1
+                                db.session.commit()
+                                next_level = LevelChart.query.filter_by(level=character.level).first()
+                                if next_level:
+                                    character.experience_cap = next_level.experience_cap
+                                    db.session.commit()
                             character.shuffle_deck_all()
-                            # finish fight somehow
-                            return make_response({"Victory": "You defeated the mob"}, 202)
+                            db.session.commit()
+                            return make_response(ongoing_fight.to_dict(rules={'-character.user',}),202)
+                            # return make_response({
+                            #     "Victory": "You defeated the mob",
+                            #     "Gold": victory_gold,
+                            #     "Experience": victory_experience,
+                            #     "Level": character.level
+                            # }, 202)
                     deck.status = 'Discarded'
                     db.session.commit()
                     return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)
@@ -195,6 +219,7 @@ class EndTurnById(Resource):
                     character.hitpoints -= character_damage
                     if character.hitpoints <= 0:
                         ongoing_fight.status = 'Defeat'
+                        db.session.delete(character)
                         db.session.commit()
                         return make_response({"Defeat": "Character has been Slayn"},418)
                 mob_deck.status = 'Discarded'

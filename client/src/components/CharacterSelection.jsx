@@ -161,7 +161,7 @@ function CharacterSelection() {
                     
                 </form>
                 ) : (
-                <CharacterInfo selectedCharacter={selectedCharacter} handleDelete={handleDelete}/>
+                <CharacterInfo selectedCharacter={selectedCharacter}/>
             )}
             <div className="😭">
                 {selectedCharacter && (<button className="🥺" onClick={()=>navigate('/town')}>Go To Town</button>)}

@@ -4,6 +4,8 @@ import Signup from "./components/Signup";
 import Battle from "./components/Battle";
 import CharacterSelection from "./components/CharacterSelection";
 import Town from "./components/Town";
+import Victory from "./components/Victory";
+import Defeat from "./components/Defeat";
 const routes = [
     {
         path: "/",
@@ -25,6 +27,14 @@ const routes = [
             {
                 path:"town",
                 element: <Town />
+            },
+            {
+                path:"victory",
+                element: <Victory />
+            },
+            {
+                path:"defeat",
+                element: <Defeat />
             }
         ]
     }

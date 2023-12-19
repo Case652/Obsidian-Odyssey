@@ -134,6 +134,7 @@ class Card(db.Model,SerializerMixin):
     __tablename__ = 'cards'
     id = db.Column(db.Integer,primary_key=True)
     card_name = db.Column(db.String,nullable=False)
+    image = db.Column(db.String,default='/CustomCard.png')
     gold_cost = db.Column(db.Integer)
     mana_cost = db.Column(db.Integer)
     mana_gain = db.Column(db.Integer)

@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 96909855015d
+Revision ID: 0b0d69569c80
 Revises: 
-Create Date: 2023-12-18 11:42:00.652247
+Create Date: 2023-12-19 01:53:59.719255
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '96909855015d'
+revision = '0b0d69569c80'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,6 +26,7 @@ def upgrade():
     op.create_table('cards',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('card_name', sa.String(), nullable=False),
+    sa.Column('image', sa.String(), nullable=True),
     sa.Column('gold_cost', sa.Integer(), nullable=True),
     sa.Column('mana_cost', sa.Integer(), nullable=True),
     sa.Column('mana_gain', sa.Integer(), nullable=True),
@@ -36,6 +37,12 @@ def upgrade():
     sa.Column('description', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('level_chart',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('level', sa.Integer(), nullable=False),
+    sa.Column('experience_cap', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('mobs',
@@ -64,6 +71,10 @@ def upgrade():
     op.create_table('characters',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('character_name', sa.String(), nullable=False),
+    sa.Column('level', sa.Integer(), nullable=True),
+    sa.Column('experience', sa.Integer(), nullable=True),
+    sa.Column('experience_cap', sa.Integer(), nullable=True),
+    sa.Column('skill_point', sa.Integer(), nullable=True),
     sa.Column('gold', sa.Integer(), nullable=True),
     sa.Column('hitpoints', sa.Integer(), nullable=True),
     sa.Column('max_hitpoints', sa.Integer(), nullable=True),
@@ -133,6 +144,7 @@ def downgrade():
     op.drop_table('characters')
     op.drop_table('users')
     op.drop_table('mobs')
+    op.drop_table('level_chart')
     op.drop_table('cards')
     op.drop_table('card_types')
     # ### end Alembic commands ###

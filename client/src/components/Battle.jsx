@@ -4,7 +4,7 @@ import Card from "./Card";
 import MobInfo from './MobInfo';
 import CharacterInfo from "./CharacterInfo";
 function Battle() {
-    const {selectedCharacter,setSelectedCharacter} = useOutletContext();
+    const {selectedCharacter,setSelectedCharacter,navigate} = useOutletContext();
     const [ongoingFight, setOngoingFight] = useState(null);
     const [activeFilter, setActiveFilter] = useState('Drawn');
     const cardsArray = selectedCharacter?.decks
@@ -62,7 +62,6 @@ function Battle() {
             fetch(`/fight/${selectedCharacter.id}`)
             .then((r)=>{
                 if (r.ok) {
-                    console.log('Fight is ongoing')
                     return r.json();
                 } else if (r.status === 201) {
                     console.log('Created a new fight')
@@ -91,7 +90,8 @@ function Battle() {
                 console.log('turn ended and a new one has started')
                 return r.json();
             } else if (r.status === 418){
-                console.log("character died please handle")
+                setSelectedCharacter(null)
+                navigate('/defeat')
             } else {
                 throw new Error('Somthing is unexpected wrong')
             }

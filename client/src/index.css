@@ -477,3 +477,13 @@ input:not(:placeholder-shown)+label{
 .Character-Title {
   font-family: 'Playfair Display', serif;
 }
+.message-title{
+  font-family: 'Playfair Display', serif;
+  color: #fff;
+  padding: 10px;
+  font-size: 5em;
+}
+.message{
+  color: #fff;
+  padding: 2em;
+}
