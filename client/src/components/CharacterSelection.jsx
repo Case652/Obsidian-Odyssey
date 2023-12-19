@@ -145,6 +145,7 @@ function CharacterSelection() {
         <section className="character-container">
             {showCreate ? (
                 <form className="selected-character" onSubmit={formik.handleSubmit}>
+                    <>DropDownHereSomeWhereForPic</>
                     <div className='box-input'>
                         <input
                             type="text"

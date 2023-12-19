@@ -231,6 +231,26 @@ input:not(:placeholder-shown)+label{
   background-size: cover;
   padding-top: 15px;
 }
+.victory-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('../public/Victory.png');
+  background-size: cover;
+  padding-top: 15px;
+}
+.defeat-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('../public/Defeat.png');
+  background-size: cover;
+  padding-top: 15px;
+}
 .🥺{
   align-items: center;
   padding: 10px;
@@ -448,6 +468,16 @@ input:not(:placeholder-shown)+label{
   padding: 1em;
   font-size: .8em;
 }
+.gold-cost{
+  padding: 1px;
+  border-radius: 20px;
+  border: double gold;
+  margin: 1px;
+  cursor: pointer;
+  color: #fff;
+  background-color: #422a06;
+  text-align: center;
+}
 .💨 {
   padding: 1px;
   border-radius: 20px;
@@ -485,5 +515,16 @@ input:not(:placeholder-shown)+label{
 }
 .message{
   color: #fff;
-  padding: 2em;
+  background-color: rgba(3, 2, 3, 0.8);
+  border-radius: 20px;
+  padding: 1em;
+  border-left: double rgb(219, 126, 4);
+  border-right: double rgb(219, 126, 4);
+}
+.message-button {
+  color: #fff;
+  background-color: rgba(3, 2, 3, 0.8);
+  border-radius: 20px;
+  padding: 1em;
+  border: double rgb(219, 4, 4);
 }

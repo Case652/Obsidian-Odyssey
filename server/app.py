@@ -163,6 +163,7 @@ class PlayCardById(Resource):
                         ongoing_fight.hitpoints -= mob_damage
                         if ongoing_fight.hitpoints <= 0:
                             ongoing_fight.status = 'Victory'
+                            character.block = 0
                             victory_gold = ongoing_fight.max_hitpoints // 2
                             victory_experience = ongoing_fight.max_hitpoints
                             character.experience += victory_experience
@@ -172,6 +173,8 @@ class PlayCardById(Resource):
                                 character.level += 1
                                 character.experience = 0
                                 character.skill_point += 1
+                                character.mana = character.max_mana
+                                character.hitpoints = character.max_hitpoints
                                 db.session.commit()
                                 next_level = LevelChart.query.filter_by(level=character.level).first()
                                 if next_level:
@@ -223,6 +226,8 @@ class EndTurnById(Resource):
                         db.session.commit()
                         return make_response({"Defeat": "Character has been Slayn"},418)
                 mob_deck.status = 'Discarded'
+            character.mana = min(character.mana + int(0.1 * character.max_mana), character.max_mana)
+            ongoing_fight.turn += 1
             ongoing_fight.discard_hand()
             character.discard_hand()
             ongoing_fight.draw_hand()

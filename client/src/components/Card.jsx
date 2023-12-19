@@ -1,5 +1,7 @@
 import {useOutletContext} from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 function Card({card,setOngoingFight,setSelectedCharacter}) {
+    const location = useLocation();
     const {navigate}= useOutletContext();
     const {id,card_name,gold_cost,mana_cost,mana_gain,hp_cost,damage,block,heal,description,image} = card.card || {};
     const formattedDescription = description
@@ -35,9 +37,9 @@ function Card({card,setOngoingFight,setSelectedCharacter}) {
             </span>
             
             <h1 >{card_name}</h1>
-            <img src="/CustomCard.png" alt="Card Image" className="🤏"/>
+            <img src={image} alt="Card Image" className="🤏"/>
             <h3 dangerouslySetInnerHTML={renderDescription} />
-            {/* Goldcost bottem corner rightside for shop expansion*/}
+            {location.pathname === '/shop' && <p className='gold-cost'>{gold_cost} Gold</p>}
         </span>
     );
 }

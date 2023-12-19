@@ -122,7 +122,7 @@ function Battle() {
                 </div>
                 <div className="battle-right">
                     <MobInfo ongoingFight={ongoingFight}/>
-                    <button className={`💨`} onClick={handleEndTurn}>End Turn(WIP)</button>
+                    <button className={`💨`} onClick={handleEndTurn}>End Turn</button>
                     <button className={`💨`}>SwitchView(WIP)</button>
                 </div>
             </div>
