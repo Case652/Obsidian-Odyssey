@@ -7,7 +7,7 @@ function Signup() {
     const {setSignup,signup,setUser,navigate} = useOutletContext();
     const signupSchema = yup.object().shape({
         username: yup.string().min(1,'Must Be?').max(50,'Less is better.'),
-        password: yup.string().min(1,'Must Be?')
+        password: yup.string().min(1,'Must Be?').max(72,'Less is better.'),
     })
     const formik = useFormik({
         initialValues:{

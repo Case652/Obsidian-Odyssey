@@ -219,7 +219,17 @@ input:not(:placeholder-shown)+label{
   width: 100%;
   background-image: url('../public/Backdrop2.png');
   background-size: cover;
-  padding-top: 30px;
+  padding-top: 15px;
+}
+.battle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('../public/Battlebackdrop.png');
+  background-size: cover;
+  padding-top: 15px;
 }
 .🥺{
   align-items: center;
@@ -245,11 +255,13 @@ input:not(:placeholder-shown)+label{
   width: 161.8px;
   height: 100px;
   background: transparent;
-  border: 2px solid #fff;
+  background-color: rgba(12, 1, 14, 0.7);
+  border: double #fff;
   border-radius: 20px;
   display:flex;
   flex-direction: column;
   align-items: center;
+  
 }
 .character-card h2 {
   margin: auto;
@@ -418,11 +430,23 @@ input:not(:placeholder-shown)+label{
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: auto;
+  background-color: rgba(3, 2, 3, 0.4);
+  border-top: double rgb(219, 126, 4);
+  border-left: double rgb(219, 126, 4);
+  border-right: double rgb(219, 126, 4);
+  border-radius: 20px;
 }
 .mob-card h3 {
+  background-color: rgba(3, 2, 3, 0.4);
+  border-radius: 20px;
+  border-left: double rgb(219, 126, 4);
+  border-right: double rgb(219, 126, 4);
   display: flex;
   margin: auto;
   text-align: center;
+  padding: 1em;
+  font-size: .8em;
 }
 .💨 {
   padding: 1px;
@@ -443,4 +467,13 @@ input:not(:placeholder-shown)+label{
   color: #fff;
   background-color: #200a0a;
   text-align: center;
+}
+.draw {
+  margin-left: auto;
+}
+.deck {
+  margin-right: auto;
+}
+.Character-Title {
+  font-family: 'Playfair Display', serif;
 }

@@ -110,7 +110,7 @@ function Battle() {
     };
 
     return(
-        <section className="character-container">
+        <section className="battle-container">
             <div className="😭">
                 <div className="battle-left">
                     <CharacterInfo selectedCharacter={selectedCharacter}/>

@@ -75,7 +75,7 @@ function CharacterSelection() {
     }
 
     const signupSchema = yup.object().shape({
-        character_name: yup.string().min(1,'Must Be?').max(50,'Less is better.'),
+        character_name: yup.string().min(1,'Must Be?').max(16,'Less is better.'),
     })
 
     const formik = useFormik({

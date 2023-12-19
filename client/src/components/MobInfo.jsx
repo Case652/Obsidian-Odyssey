@@ -12,7 +12,7 @@ function MobInfo({ongoingFight}) {
         <div className="selected-character">
             {ongoingFight ? (
                 <>
-                    <h2>{mob_name}</h2>
+                    <h2 className="Character-Title">{mob_name}</h2>
                     <img src='character1.png' alt='display-character'></img>
                     <div className="😭">
                         <p className="hp">{hitpoints}/{max_hitpoints} Hp</p>

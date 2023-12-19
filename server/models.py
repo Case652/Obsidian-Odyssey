@@ -36,10 +36,10 @@ class Character(db.Model,SerializerMixin):
     id = db.Column(db.Integer,primary_key=True)
     character_name = db.Column(db.String,nullable=False)
 
-    # level = db.Column(db.Integer,default=1)
-    # experience = db.Column(db.Integer,default=0)
-    # experience_cap = db.Column(db.Integer,default=100)
-    # skill_point = db.Column(db.Integer,default=0)
+    level = db.Column(db.Integer,default=1)
+    experience = db.Column(db.Integer,default=0)
+    experience_cap = db.Column(db.Integer,default=100)
+    skill_point = db.Column(db.Integer,default=0)
 
     gold = db.Column(db.Integer,default=500)
 
@@ -278,3 +278,8 @@ class InFightMobDeck(db.Model,SerializerMixin):
     card_id = db.Column(db.Integer, db.ForeignKey('cards.id'))
     card = db.relationship('Card', back_populates='in_fight_mob_decks')
     serialize_rules = ('-card.decks','-character.decks','-card.mob_decks')
+class LevelChart(db.Model,SerializerMixin):
+    __tablename__ = 'level_chart'
+    id = db.Column(db.Integer,primary_key=True)
+    level = db.Column(db.Integer,nullable=False)
+    experience_cap = db.Column(db.Integer,nullable=False)
