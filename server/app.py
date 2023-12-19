@@ -135,7 +135,7 @@ api.add_resource(Fights,'/api/v1/fight')
 class PlayCardById(Resource):
     def get(self,id):
         character_id = session.get('character_id')
-        deck = Deck.query.filter_by(card_id=id, character_id=character_id, status='Drawn').first()
+        deck = Deck.query.filter_by(card_id=id, character_id=character_id, status='Drawn').first() #small bug where you can play a card thats not drawn if a card you have drawn is the same card. cancels itself out because you techncially have that card drawn. WIP
         if deck:
             card = deck.card
             character = Character.query.filter_by(id=character_id).first()
@@ -161,7 +161,7 @@ class PlayCardById(Resource):
                             ongoing_fight.status = 'Victory'
                             character.shuffle_deck_all()
                             # finish fight somehow
-                            pass
+                            return make_response({"Victory": "You defeated the mob"}, 202)
                     deck.status = 'Discarded'
                     db.session.commit()
                     return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)
@@ -171,8 +171,43 @@ class PlayCardById(Resource):
                 return make_response({"error": "No onGoing fight"},418)
         else:
             return make_response({"error":"Character does not have this Drawn"},404)
-api.add_resource(PlayCardById,'/api/v1/PlayCard/<id>')
+api.add_resource(PlayCardById,'/api/v1/playcard/<id>')
+class EndTurnById(Resource):
+    def get(self,id):
+        ongoing_fight = Fight.query.filter_by(id=id, status='Ongoing').first()
+        if ongoing_fight:
+            character = ongoing_fight.character
+            drawn_mob_decks = [mob_deck for mob_deck in ongoing_fight.in_fight_mob_decks if mob_deck.status == 'Drawn']
+            for mob_deck in drawn_mob_decks:
+                card = mob_deck.card
+                max_hitpoints = ongoing_fight.max_hitpoints
+                ongoing_fight.hitpoints = min(ongoing_fight.hitpoints + card.heal, max_hitpoints)
+                max_mana = ongoing_fight.max_mana
+                ongoing_fight.mana = min(ongoing_fight.mana + card.mana_gain, max_mana)
+                ongoing_fight.block += card.block
 
+                character_damage = card.damage
+                if character.block > 0:
+                    block_damage = min(character.block, character_damage)
+                    character.block -= block_damage
+                    character_damage -= block_damage
+                if character_damage > 0:
+                    character.hitpoints -= character_damage
+                    if character.hitpoints <= 0:
+                        ongoing_fight.status = 'Defeat'
+                        db.session.commit()
+                        return make_response({"Defeat": "Character has been Slayn"},418)
+                mob_deck.status = 'Discarded'
+            ongoing_fight.discard_hand()
+            character.discard_hand()
+            ongoing_fight.draw_hand()
+            character.draw_hand()
+            db.session.commit()
+            return make_response(ongoing_fight.to_dict(rules={'-character.user'}), 200)
+        else:
+            return make_response({"error": "This is not an ongoing fight"}, 404)
+
+api.add_resource(EndTurnById,'/api/v1/endturn/<id>')
 @app.route('/api/v1/login',methods=['POST'])
 def login():
     data = request.get_json()

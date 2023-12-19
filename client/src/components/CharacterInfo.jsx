@@ -13,9 +13,12 @@ function CharacterInfo({selectedCharacter}) {
                         <p className="hp">{hitpoints}/{max_hitpoints} Hp</p>
                         <p className="mana">{mana}/{max_mana} Mana</p>
                     </div>
-                    {location.pathname === '/battle' && <p>Blocking {block}</p>}
-                    <p>{draw} Draw</p>
+                    <div className="😭">
+                        {location.pathname === '/battle' && <p>Blocking {block}</p>}
+                        {location.pathname === '/battle' && <p className='block'>Blocking {block}</p>}
+                    </div>
                     <p>{decks.length} Cards in Deck</p>
+                    <p>{draw} Draw</p>
                 </>
             ) : (
             <h2>No character selected</h2>
