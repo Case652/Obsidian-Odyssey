@@ -20,6 +20,7 @@ function Card({card,setOngoingFight,setSelectedCharacter}) {
                 return r.json();
             } else if (r.status === 202){
                 navigate('/victory')
+                return r.json()
             }else {throw new Error('Somthing is unexpected wrong')}
         }).then((fight)=>{
             if (fight !== null) {

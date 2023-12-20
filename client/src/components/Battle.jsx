@@ -108,7 +108,17 @@ function Battle() {
         setFilterType(filterType);
         setActiveFilter(filterType);
     };
-
+    const handleFlee=()=>{
+        fetch('/flee')
+        .then((r)=>{
+            if (r.ok){
+                setOngoingFight(null)
+                navigate('/town')
+            } else {throw new Error('Somthing is unexpected wrong')}
+        }).catch((error) =>{
+            console.error('error fetching fight',error)
+        })
+    }
     return(
         <section className="battle-container">
             <div className="😭">
@@ -123,7 +133,8 @@ function Battle() {
                 <div className="battle-right">
                     <MobInfo ongoingFight={ongoingFight}/>
                     <button className={`💨`} onClick={handleEndTurn}>End Turn</button>
-                    <button className={`💨`}>SwitchView(WIP)</button>
+                    <button className={`💨`} onClick={handleFlee}>Run-Away</button>
+                    {/* <button className={`💨`}>SwitchView(WIP)</button> */}
                 </div>
             </div>
             <div className="slide-wrapper">

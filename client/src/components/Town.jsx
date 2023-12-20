@@ -114,11 +114,11 @@ function Town() {
                 {showShop &&<p className="message">A thin figure speaks:</p>}
                 {showShop &&<p className="message">"For a mere handful of gold, you could possess mysterious and rare cards I've acquired from the deepest corners of the realms "</p>}
                 {showShop &&<p></p>}
-                {showShop &&<p className="">*The audacity to demand payment for merely glimpsing what they peddle. *</p>}
+                {showShop &&<p className="message">*The audacity to demand payment for merely glimpsing what they peddle. *</p>}
                 {showShop &&<p></p>}
                 {showShop &&<button className="🥺" onClick={handleShowShopText}>Walk away</button>}
                 {showShop &&<button className="🥺" onClick={handleShopRoll100}>Slip him 100 gold</button>}
-                {showShop &&<button className="🥺" onClick={handleShopRoll300}> Chuck at him 300 gold</button>}
+                {showShop &&<button className="🥺" onClick={handleShopRoll300}> Chuck 300 gold at him</button>}
 
                 {renderCards}
             </div>) : (

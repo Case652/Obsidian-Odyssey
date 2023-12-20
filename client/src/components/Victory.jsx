@@ -7,7 +7,11 @@ function Victory() {
             <h1 className="message-title">A Triumphant Victory</h1>
             <CharacterInfo selectedCharacter={selectedCharacter}/>
             <p className="message">Well Done, You feel yourself growing stronger and the jingle of coins in your purse grows more satisfying...</p>
-            <button className="message-button" onClick={()=>navigate('/town')}>Back to Town</button>
+            <div>
+                <button className="message-button" onClick={()=>navigate('/town')}>Back to Town</button>
+                <button className="message-button" onClick={()=>navigate('/battle')}>Keep Fighting</button>
+            </div>
+            
         </div>
     );
 }

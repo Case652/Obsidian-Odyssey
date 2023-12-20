@@ -105,6 +105,7 @@ class CharacterFightById(Resource):
             new_fight = Fight(character=character)
             
             new_fight.mob_name = random_mob.mob_name
+            new_fight.image = random_mob.image
             new_fight.level = random_mob.level
             new_fight.hitpoints = random_mob.hitpoints
             new_fight.max_hitpoints = random_mob.max_hitpoints
@@ -126,7 +127,19 @@ class CharacterFightById(Resource):
         else:
             return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)
 api.add_resource(CharacterFightById,'/api/v1/fight/<id>')
-
+class Flee(Resource):
+    def get(self):
+        character_id = session.get('character_id')
+        character = Character.query.filter_by(id=character_id).first()
+        if not character:
+            return make_response({"error": "No character found"}, 404)
+        ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
+        if not ongoing_fight:
+            return make_response({"error": "No Fight found"}, 408)
+        ongoing_fight.status = 'Defeat'
+        db.session.commit()
+        return make_response({"Message":"You Ran"},202)
+api.add_resource(Flee,'/api/v1/flee')
 class Fights(Resource):
     def get(self):
         all_fights = [f.to_dict(rules={

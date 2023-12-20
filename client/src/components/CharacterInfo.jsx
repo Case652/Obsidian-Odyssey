@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 function CharacterInfo({selectedCharacter}) {
-    const {character_name,hitpoints,max_hitpoints,mana,max_mana,gold,draw,id,decks,block,level,experience,experience_cap,skill_point} = selectedCharacter || {};
+    const {character_name,hitpoints,max_hitpoints,mana,max_mana,gold,draw,id,decks,block,level,experience,experience_cap,skill_point,image} = selectedCharacter || {};
     const location = useLocation();
     return(
         <div className="selected-character">
@@ -11,7 +11,7 @@ function CharacterInfo({selectedCharacter}) {
                     <div className="😭">
                         <p>Lv: {level}</p>
                     </div>
-                    <img src='character1.png' alt='display-character'></img>
+                    <img src={image} alt='display-character'></img>
                     <div className="😭">
                         <p className="hp">{hitpoints}/{max_hitpoints} Hp</p>
                         <p className="mana">{mana}/{max_mana} Mana</p>

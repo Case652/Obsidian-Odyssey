@@ -328,6 +328,7 @@ if __name__ == '__main__':
         cards_to_commit = [
             Card(
                 card_name="Magic Bolt",
+                image="/cards/Arcane2.png",
                 gold_cost=200,
                 mana_cost=5,
                 mana_gain=0,
@@ -339,6 +340,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Magic Ward",
+                image="/cards/Ward.png",
                 gold_cost=200,
                 mana_cost=5,
                 mana_gain=0,
@@ -350,6 +352,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Magic Band-aid",
+                image="/cards/heal2.png",
                 gold_cost=200,
                 mana_cost=10,
                 mana_gain=0,
@@ -361,6 +364,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Vitality Transfusion",
+                image="/cards/Blood.png",
                 gold_cost=400,
                 mana_cost=0,
                 mana_gain=20,
@@ -372,6 +376,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Wack Em",
+                image="/cards/Wack.png",
                 gold_cost=100,
                 mana_cost=0,
                 mana_gain=0,
@@ -383,6 +388,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Hide Behind Somthing",
+                image="/cards/Forest.png",
                 gold_cost=100,
                 mana_cost=0,
                 mana_gain=0,
@@ -394,6 +400,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Arcane Missile",
+                image="/cards/Arcane.png",
                 gold_cost=700,
                 mana_cost=40,
                 mana_gain=0,
@@ -405,6 +412,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Frost Nova",
+                image="/cards/Frost.png",
                 gold_cost=1200,
                 mana_cost=30,
                 mana_gain=0,
@@ -416,6 +424,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Explosion",
+                image="/cards/Explosion.png",
                 gold_cost=1600,
                 mana_cost=20,
                 mana_gain=0,
@@ -427,6 +436,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Teleportation",
+                image="/cards/Teleport.png",
                 gold_cost=1200,
                 mana_cost=25,
                 mana_gain=0,
@@ -438,6 +448,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Healing Aura",
+                image="/cards/heal.png",
                 gold_cost=1250,
                 mana_cost=50,
                 mana_gain=0,
@@ -449,6 +460,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Barrier of Protection",
+                image="/cards/Frost2.png",
                 gold_cost=2000,
                 mana_cost=50,
                 mana_gain=0,
@@ -460,6 +472,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Earthquake",
+                image="/cards/Earthquake.png",
                 gold_cost=900,
                 mana_cost=25,
                 mana_gain=0,
@@ -471,6 +484,7 @@ if __name__ == '__main__':
             ),
             Card(
                 card_name="Time Stop",
+                image="/cards/Time.png",
                 gold_cost=2500,
                 mana_cost=70,
                 mana_gain=100,
@@ -487,7 +501,8 @@ if __name__ == '__main__':
         print('Seeding Mobs...')
         mobs_to_commit = [
             {
-                "mob_name": "Goblin",
+                "mob_name": "Tumbletwig",
+                "image": "/mob/Tumbletwig.png",
                 "level": "1",
                 "hitpoints": "25",
                 "max_hitpoints": "25",
@@ -510,12 +525,13 @@ if __name__ == '__main__':
             },
             {
                 "mob_name": "Ratspawn",
+                "image": "/mob/Ratspawn.png",
                 "level": "2",
                 "hitpoints": "38",
                 "max_hitpoints": "38",
                 "mana": "38",
                 "max_mana": "38",
-                "draw": "2",
+                "draw": "1",
                 "block": "0",
                 "mob_decks": [
                     {"card_name": "Scurry Strike"},
@@ -542,6 +558,7 @@ if __name__ == '__main__':
             },
             {
                 "mob_name": "Muckcrawler",
+                "image": "/mob/Muckcrawler.png",
                 "level": "3",
                 "hitpoints": "57",
                 "max_hitpoints": "57",
@@ -564,6 +581,7 @@ if __name__ == '__main__':
             },
             {
                 "mob_name": "Sporeling",
+                "image": "/mob/Sporeling.png",
                 "level": "4",
                 "hitpoints": "86",
                 "max_hitpoints": "86",
@@ -584,6 +602,7 @@ if __name__ == '__main__':
             },
             {
                 "mob_name": "Slime glimmer",
+                "image": "/mob/SlimeGlimmer.png",
                 "level": "5",
                 "hitpoints": "129",
                 "max_hitpoints": "129",

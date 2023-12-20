@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 53fc927017c1
+Revision ID: c980900f8ba0
 Revises: 
-Create Date: 2023-12-19 13:50:24.254976
+Create Date: 2023-12-19 22:06:26.952234
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '53fc927017c1'
+revision = 'c980900f8ba0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -49,6 +49,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('level', sa.Integer(), nullable=True),
     sa.Column('mob_name', sa.String(), nullable=False),
+    sa.Column('image', sa.String(), nullable=True),
     sa.Column('hitpoints', sa.Integer(), nullable=True),
     sa.Column('max_hitpoints', sa.Integer(), nullable=True),
     sa.Column('mana', sa.Integer(), nullable=True),
@@ -113,6 +114,7 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('mob_name', sa.String(), nullable=False),
+    sa.Column('image', sa.String(), nullable=True),
     sa.Column('level', sa.String(), nullable=True),
     sa.Column('hitpoints', sa.Integer(), nullable=True),
     sa.Column('max_hitpoints', sa.Integer(), nullable=True),

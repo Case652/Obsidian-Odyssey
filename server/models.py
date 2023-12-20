@@ -35,7 +35,7 @@ class Character(db.Model,SerializerMixin):
 
     id = db.Column(db.Integer,primary_key=True)
     character_name = db.Column(db.String,nullable=False)
-    image = db.Column(db.String,default='character1.png')
+    image = db.Column(db.String,default='/character/character1.png')
     level = db.Column(db.Integer,default=1)
     experience = db.Column(db.Integer,default=0)
     experience_cap = db.Column(db.Integer,default=83)
@@ -134,7 +134,7 @@ class Card(db.Model,SerializerMixin):
     __tablename__ = 'cards'
     id = db.Column(db.Integer,primary_key=True)
     card_name = db.Column(db.String,nullable=False)
-    image = db.Column(db.String,default='/CustomCard.png')
+    image = db.Column(db.String,default='/cards/CustomCard.png')
     gold_cost = db.Column(db.Integer)
     mana_cost = db.Column(db.Integer)
     mana_gain = db.Column(db.Integer)
@@ -177,6 +177,7 @@ class Mob(db.Model, SerializerMixin):
     id = db.Column(db.Integer,primary_key=True)
     level = db.Column(db.Integer,default=1)
     mob_name = db.Column(db.String,nullable=False)
+    image = db.Column(db.String,default='/mob/Sporeling2.png')
     # gold = db.Column(db.Integer,default=500)
     hitpoints = db.Column(db.Integer,default=100)
     max_hitpoints = db.Column(db.Integer,default=100)
@@ -202,6 +203,7 @@ class Fight(db.Model,SerializerMixin):
     #enemy Stats, not the ID because no cheese
 
     mob_name = db.Column(db.String,nullable=False)
+    image = db.Column(db.String,default='/mob/Sporeling3.png')
     level = db.Column(db.String,default=1)
     hitpoints = db.Column(db.Integer,default=100)
     max_hitpoints = db.Column(db.Integer,default=100)

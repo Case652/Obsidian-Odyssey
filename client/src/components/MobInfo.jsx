@@ -1,6 +1,6 @@
 import MobCard from "./MobCard";
 function MobInfo({ongoingFight}) {
-    const {mob_name,hitpoints,max_hitpoints,mana,max_mana,draw,id,in_fight_mob_decks,block} = ongoingFight || {};
+    const {mob_name,hitpoints,max_hitpoints,mana,max_mana,draw,id,in_fight_mob_decks,block,image} = ongoingFight || {};
     const mobCards = in_fight_mob_decks || [];
     const renderMobCards = mobCards?.filter((card) => card.status === "Drawn").map((card)=>(
         <MobCard
@@ -13,7 +13,7 @@ function MobInfo({ongoingFight}) {
             {ongoingFight ? (
                 <>
                     <h2 className="Character-Title">{mob_name}</h2>
-                    <img src='character1.png' alt='display-character'></img>
+                    <img src={image} alt='display-Mob' className="display-character"></img>
                     <div className="😭">
                         <p className="hp">{hitpoints}/{max_hitpoints} Hp</p>
                         <p className="block">Blocking {block}</p>
