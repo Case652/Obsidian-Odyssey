@@ -6,7 +6,7 @@ function CharacterInfo({selectedCharacter}) {
         <div className="selected-character">
             {selectedCharacter ? (
                 <>
-                    {location.pathname === '/' && <button className='Edit'>WIP Edit Character</button>}
+                    {/* {location.pathname === '/' && <button className='Edit'>WIP Edit Character</button>} */}
                     <h2 className='Character-Title'>{character_name}</h2>
                     <div className="😭">
                         <p>Lv: {level}</p>

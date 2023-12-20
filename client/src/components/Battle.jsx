@@ -83,7 +83,7 @@ function Battle() {
         }
     },[selectedCharacter?.id])
     const handleEndTurn=()=>{
-        console.log("fetch to end turn")
+        console.log("ending turn")
         fetch(`/endturn/${ongoingFight.id}`)
         .then((r)=>{
             if (r.ok) {

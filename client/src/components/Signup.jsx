@@ -53,7 +53,6 @@ function Signup() {
             signupIn.classList.remove('flip');
         },800)
     }
-    console.log(formik.errors)
     return (
         <section className='signup-in'>
             <div className='form-outline'>
