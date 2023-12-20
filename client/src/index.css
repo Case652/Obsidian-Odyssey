@@ -221,6 +221,37 @@ input:not(:placeholder-shown)+label{
   background-size: cover;
   padding-top: 15px;
 }
+.town-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('../public/Backdrop2.png');
+  background-size: cover;
+  padding-top: 15px;
+  padding-left: 300px;
+}
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-gap: 15px;
+  min-height: auto;
+  width: 900px;
+  min-width: auto;
+  max-width: 100%;
+  max-height: 760px;
+  height: 760px;
+  background: transparent;
+  border: double gold;
+  border-radius: 20px;
+  backdrop-filter: blur(125px) brightness(1.2);
+  margin-top: 3%;
+  margin: 2%;
+  padding: 15px;
+  color: #fff;
+  overflow: auto;
+}
 .battle-container {
   display: flex;
   flex-direction: column;
@@ -298,6 +329,21 @@ input:not(:placeholder-shown)+label{
   padding: 10px;
   color: #fff;
 }
+.panel {
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  width: 360px;
+  height: 300px;
+  background: transparent;
+  border: double gold;
+  border-radius: 20px;
+  backdrop-filter: blur(125px) brightness(1.2);
+  margin-top: 3%;
+  padding: 10px;
+  color: #fff;
+}
+
 .selected-character h2 {
   text-align: center;
   font-size: 30px;
@@ -498,6 +544,26 @@ input:not(:placeholder-shown)+label{
   background-color: #200a0a;
   text-align: center;
 }
+.🎮{
+  padding: 1px;
+  border-radius: 20px;
+  border: double rgb(255, 0, 0);
+  margin:auto;
+  cursor: pointer;
+  color: #fff;
+  background-color: #200a0a;
+  text-align: center;
+}
+.🎮🎮{
+  padding: 1px;
+  border-radius: 20px;
+  border: double rgb(28, 252, 7);
+  margin: auto;
+  cursor: pointer;
+  color: #fff;
+  background-color: #200a0a;
+  text-align: center;
+}
 .draw {
   margin-left: auto;
 }
@@ -527,4 +593,10 @@ input:not(:placeholder-shown)+label{
   border-radius: 20px;
   padding: 1em;
   border: double rgb(219, 4, 4);
+}
+.shop-text{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
 }

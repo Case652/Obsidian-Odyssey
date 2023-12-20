@@ -11,7 +11,6 @@ function CharacterInfo({selectedCharacter}) {
                     <div className="😭">
                         <p>Lv: {level}</p>
                     </div>
-                    
                     <img src='character1.png' alt='display-character'></img>
                     <div className="😭">
                         <p className="hp">{hitpoints}/{max_hitpoints} Hp</p>

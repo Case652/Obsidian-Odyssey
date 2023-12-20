@@ -22,7 +22,6 @@ function CharacterSelection() {
             }
         })
         .then((character) => {
-            console.log(character)
             setSelectedCharacter(character);
             setShowCreate(false)
             fetch(`/changeChar`,{

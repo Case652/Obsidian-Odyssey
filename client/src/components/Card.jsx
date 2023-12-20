@@ -12,6 +12,7 @@ function Card({card,setOngoingFight,setSelectedCharacter}) {
         .replace('{mana_gain}',mana_gain)
     const formattedDesc = formattedDescription.replace(/\n/g, '<br/>');
     const renderDescription = { __html: formattedDesc };
+
     const handlePlayCard = ()=> {
         fetch(`/playcard/${id}`)
         .then((r)=>{
@@ -29,8 +30,20 @@ function Card({card,setOngoingFight,setSelectedCharacter}) {
             console.error('error fetching fight',error)
         })
     }
+    const handleSellCard = () => {
+        console.log('WIP route')
+    }
+    const handleUseCard = () => {
+        if (location.pathname === '/battle') {
+            handlePlayCard();
+        } else if (location.pathname === '/town') {
+            handleSellCard();
+        } else {
+            console.log('unexpected')
+        }
+    }
     return(
-        <span className="card" onClick={handlePlayCard}>
+        <span className="card" onClick={handleUseCard}>
             <span className="😭">
                 <h2 className="hp">{hp_cost} Hp</h2>
                 <h2 className="mana">{mana_cost} Mana</h2>
@@ -39,7 +52,7 @@ function Card({card,setOngoingFight,setSelectedCharacter}) {
             <h1 >{card_name}</h1>
             <img src={image} alt="Card Image" className="🤏"/>
             <h3 dangerouslySetInnerHTML={renderDescription} />
-            {location.pathname === '/shop' && <p className='gold-cost'>{gold_cost} Gold</p>}
+            {/* {location.pathname === '/town' && <p className='gold-cost'>{gold_cost} Gold</p>} */}
         </span>
     );
 }

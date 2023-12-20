@@ -35,10 +35,10 @@ class Character(db.Model,SerializerMixin):
 
     id = db.Column(db.Integer,primary_key=True)
     character_name = db.Column(db.String,nullable=False)
-
+    image = db.Column(db.String,default='character1.png')
     level = db.Column(db.Integer,default=1)
     experience = db.Column(db.Integer,default=0)
-    experience_cap = db.Column(db.Integer,default=100)
+    experience_cap = db.Column(db.Integer,default=83)
     skill_point = db.Column(db.Integer,default=0)
 
     gold = db.Column(db.Integer,default=500)

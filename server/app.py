@@ -236,8 +236,75 @@ class EndTurnById(Resource):
             return make_response(ongoing_fight.to_dict(rules={'-character.user'}), 200)
         else:
             return make_response({"error": "This is not an ongoing fight"}, 404)
-
 api.add_resource(EndTurnById,'/api/v1/endturn/<id>')
+class ShopThree(Resource):
+    def get(self):
+        character_id = session.get('character_id')
+        character = Character.query.filter_by(id=character_id).first()
+        if character.gold >= 100:
+            min_card_id = 17
+            available_cards = (
+            db.session.query(Card)
+            .filter(Card.id >= min_card_id)
+            .order_by(db.func.random())
+            .limit(3)
+            .all()
+        )
+            character.gold -= 100
+            db.session.commit()
+            response_data = {
+                'character': character.to_dict(),
+                'available_cards': [card.to_dict(rules={'-decks',"-mob_decks",'-updated_at','-created_at'}) for card in available_cards],
+            }
+            return make_response(response_data, 200)
+        else:
+            return make_response({"Message": "Not Enough Gold"},402)
+api.add_resource(ShopThree,'/api/v1/shop100')
+class ShopNine(Resource):
+    def get(self):
+        character_id = session.get('character_id')
+        character = Character.query.filter_by(id=character_id).first()
+        if character.gold >= 300:
+            min_card_id = 17
+            available_cards = (
+            db.session.query(Card)
+            .filter(Card.id >= min_card_id)
+            .order_by(db.func.random())
+            .limit(9)
+            .all()
+        )
+            character.gold -= 300
+            db.session.commit()
+            response_data = {
+                'character': character.to_dict(),
+                'available_cards': [card.to_dict(rules={'-decks',"-mob_decks",'-updated_at','-created_at'}) for card in available_cards],
+            }
+            return make_response(response_data, 200)
+        else:
+            return make_response({"Message": "Not Enough Gold"},402)
+api.add_resource(ShopNine,'/api/v1/shop300')
+class BuyCardById(Resource):
+    def get(self,id):
+        card = Card.query.filter_by(id=id).first()
+        if not card:
+            return make_response({"message": "Card not found"}, 404)
+        character_id = session.get('character_id')
+        character = Character.query.filter_by(id=character_id).first()
+        if not character:
+            return make_response({"message": "Character not found"}, 404)
+        if character.gold >= card.gold_cost:
+            character.gold -= card.gold_cost
+            new_deck_entry = Deck(character=character, card=card)
+            db.session.add(new_deck_entry)
+            db.session.commit()
+            response_data = {
+                'character': character.to_dict(),
+                'new_card': card.to_dict(rules={'-decks',"-mob_decks",'-updated_at','-created_at'}),
+            }
+            return make_response(response_data, 200)
+        else:
+            return make_response({"message": "Not enough gold to buy the card"}, 402)
+api.add_resource(BuyCardById,'/api/v1/buycard/<id>')
 @app.route('/api/v1/login',methods=['POST'])
 def login():
     data = request.get_json()
