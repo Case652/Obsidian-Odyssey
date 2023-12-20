@@ -35,7 +35,14 @@ class Character(db.Model,SerializerMixin):
 
     id = db.Column(db.Integer,primary_key=True)
     character_name = db.Column(db.String,nullable=False)
+    image = db.Column(db.String,default='/character/character1.png')
+    level = db.Column(db.Integer,default=1)
+    experience = db.Column(db.Integer,default=0)
+    experience_cap = db.Column(db.Integer,default=83)
+    skill_point = db.Column(db.Integer,default=0)
+
     gold = db.Column(db.Integer,default=500)
+
     hitpoints = db.Column(db.Integer,default=100)
     max_hitpoints = db.Column(db.Integer,default=100)
     mana = db.Column(db.Integer,default=100)
@@ -127,6 +134,7 @@ class Card(db.Model,SerializerMixin):
     __tablename__ = 'cards'
     id = db.Column(db.Integer,primary_key=True)
     card_name = db.Column(db.String,nullable=False)
+    image = db.Column(db.String,default='/cards/CustomCard.png')
     gold_cost = db.Column(db.Integer)
     mana_cost = db.Column(db.Integer)
     mana_gain = db.Column(db.Integer)
@@ -142,9 +150,11 @@ class Card(db.Model,SerializerMixin):
     characters = association_proxy('decks','character')
     mob_decks = db.relationship('MobDeck',back_populates='card')
     mob = association_proxy('decks','mob')
-    serialize_rules = ('-decks.card','-mob_decks.card')
+    in_fight_mob_decks = db.relationship('InFightMobDeck', back_populates='card')
+    
+    serialize_rules = ('-decks.card','-mob_decks.card','-in_fight_mob_decks')
 
-class CardType(db.Model, SerializerMixin):
+class CardType(db.Model, SerializerMixin): #cut Content.
     __tablename__ = 'card_types'
     id = db.Column(db.Integer,primary_key=True)
     tag = db.Column(db.String,default='custom')
@@ -165,14 +175,15 @@ class MobDeck(db.Model,SerializerMixin):
 class Mob(db.Model, SerializerMixin):
     __tablename__ = 'mobs'
     id = db.Column(db.Integer,primary_key=True)
-
+    level = db.Column(db.Integer,default=1)
     mob_name = db.Column(db.String,nullable=False)
+    image = db.Column(db.String,default='/mob/Sporeling2.png')
     # gold = db.Column(db.Integer,default=500)
     hitpoints = db.Column(db.Integer,default=100)
     max_hitpoints = db.Column(db.Integer,default=100)
     mana = db.Column(db.Integer,default=100)
     max_mana = db.Column(db.Integer,default=100)
-    draw = db.Column(db.Integer,default=5)
+    draw = db.Column(db.Integer,default=1)
     block = db.Column(db.Integer,default=0)
     created_at = db.Column(db.DateTime,server_default=db.func.now())
     updated_at = db.Column(db.DateTime,server_default=db.func.now(),onupdate=db.func.now())
@@ -190,10 +201,88 @@ class Fight(db.Model,SerializerMixin):
     created_at = db.Column(db.DateTime,server_default=db.func.now())
     updated_at = db.Column(db.DateTime,server_default=db.func.now(),onupdate=db.func.now())
     #enemy Stats, not the ID because no cheese
+
+    mob_name = db.Column(db.String,nullable=False)
+    image = db.Column(db.String,default='/mob/Sporeling3.png')
+    level = db.Column(db.String,default=1)
+    hitpoints = db.Column(db.Integer,default=100)
+    max_hitpoints = db.Column(db.Integer,default=100)
+    mana = db.Column(db.Integer,default=100)
+    max_mana = db.Column(db.Integer,default=100)
+    draw = db.Column(db.Integer,default=1)
+    block = db.Column(db.Integer,default=0)
+
     #a character ID
     character_id = db.Column(db.Integer, db.ForeignKey('characters.id'))
     character = db.relationship('Character',back_populates='fights')
     
-    serialize_rules = ('-character.fights',)
+    in_fight_mob_decks = db.relationship('InFightMobDeck', back_populates='fight',cascade='all,delete-orphan')
+    serialize_rules = ('-character.fights',"-in_fight_mob_decks.fight")
+    def discard_hand(self):
+        in_fight_mob_decks = InFightMobDeck.query.filter_by(fight_id=self.id, status='Undrawn').all()
 
+        for in_fight_mob_deck in in_fight_mob_decks:
+            in_fight_mob_deck.status = 'Discarded'
+            db.session.add(in_fight_mob_deck)
+        db.session.commit()
+    def reset_deck_status(self):
+        in_fight_mob_decks = InFightMobDeck.query.filter_by(fight_id=self.id).all()
 
+        for in_fight_mob_deck in in_fight_mob_decks:
+            in_fight_mob_deck.status = 'Undrawn'
+            db.session.add(in_fight_mob_deck)
+        db.session.commit()
+    def shuffle_discarded_into_deck(self):
+        discarded_in_fight_mob_decks = InFightMobDeck.query.filter_by(fight_id=self.id, status='Discarded').all()
+
+        for discarded_in_fight_mob_deck in discarded_in_fight_mob_decks:
+            discarded_in_fight_mob_deck.status = 'Undrawn'
+            db.session.add(discarded_in_fight_mob_deck)
+        db.session.commit()
+    def draw_card(self):
+        undrawn_in_fight_mob_decks = InFightMobDeck.query.filter_by(fight_id=self.id, status='Undrawn').all()
+
+        if not undrawn_in_fight_mob_decks:
+            self.shuffle_discarded_into_deck()
+            undrawn_in_fight_mob_decks = InFightMobDeck.query.filter_by(fight_id=self.id, status='Undrawn').all()
+
+        if undrawn_in_fight_mob_decks:
+            drawn_in_fight_mob_deck = random.choice(undrawn_in_fight_mob_decks)
+            drawn_in_fight_mob_deck.status = 'Drawn'
+            db.session.commit()
+            return drawn_in_fight_mob_deck
+        else:
+            return None
+    def draw_hand(self):
+            undrawn_in_fight_mob_decks = InFightMobDeck.query.filter_by(fight_id=self.id, status='Undrawn').all()
+            discarded_in_fight_mob_decks = InFightMobDeck.query.filter_by(fight_id=self.id, status='Discarded').all()
+
+            total_cards = len(undrawn_in_fight_mob_decks) + len(discarded_in_fight_mob_decks)
+            i = min(self.draw, total_cards)
+
+            if total_cards < self.draw:
+                i = total_cards
+
+            for _ in range(i):
+                drawn_in_fight_mob_deck = self.draw_card()
+
+                if drawn_in_fight_mob_deck is None:
+                    break
+
+            return i
+class InFightMobDeck(db.Model,SerializerMixin):
+    __tablename__ = 'in_fight_mob_decks'
+
+    id = db.Column(db.Integer,primary_key=True)
+    status = db.Column(db.String,default="Undrawn")
+
+    fight_id = db.Column(db.Integer, db.ForeignKey('fights.id'))
+    fight = db.relationship('Fight',back_populates='in_fight_mob_decks')
+    card_id = db.Column(db.Integer, db.ForeignKey('cards.id'))
+    card = db.relationship('Card', back_populates='in_fight_mob_decks')
+    serialize_rules = ('-card.decks','-character.decks','-card.mob_decks')
+class LevelChart(db.Model,SerializerMixin):
+    __tablename__ = 'level_chart'
+    id = db.Column(db.Integer,primary_key=True)
+    level = db.Column(db.Integer,nullable=False)
+    experience_cap = db.Column(db.Integer,nullable=False)

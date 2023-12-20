@@ -5,11 +5,12 @@
 # Remote library imports
 from flask import request, make_response, session
 from flask_restful import Resource
-
+from sqlalchemy import or_
+from random import randint,choice
 # Local imports
 from config import app, db, api
 # Add your model imports
-from models import User, Character,Deck,Card,CardType,MobDeck,Mob,Fight
+from models import User, Character,Deck,Card,CardType,MobDeck,Mob,Fight,InFightMobDeck,LevelChart
 from seed import starter_deck
 
 # Views go here!
@@ -94,18 +95,51 @@ class CharacterFightById(Resource):
         if not character:
             return make_response({"error": "No character found"}, 404)
         ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
-
+    # def post
         if not ongoing_fight:
+            available_mobs = Mob.query.filter(or_(Mob.level == character.level, Mob.level < character.level)).all()
+            if not available_mobs:
+                return make_response({"error": "No suitable mob found for the character's level"}, 404)
+            random_mob = choice(available_mobs)
+
             new_fight = Fight(character=character)
+            
+            new_fight.mob_name = random_mob.mob_name
+            new_fight.image = random_mob.image
+            new_fight.level = random_mob.level
+            new_fight.hitpoints = random_mob.hitpoints
+            new_fight.max_hitpoints = random_mob.max_hitpoints
+            new_fight.mana = random_mob.mana
+            new_fight.max_mana = random_mob.max_mana
+            new_fight.draw = random_mob.draw
+            new_fight.block = random_mob.block
             db.session.add(new_fight)
             db.session.commit()
+            mob_decks = MobDeck.query.filter_by(mob=random_mob).all()
+            for mob_deck in mob_decks:
+                new_mob_deck = InFightMobDeck(status='Undrawn', fight=new_fight, card_id=mob_deck.card_id)
+                db.session.add(new_mob_deck)
+                db.session.commit()
+            new_fight.draw_hand()
             character.draw_hand()
+            db.session.commit()
             return make_response(new_fight.to_dict(rules={'-character.user'}), 201)
         else:
             return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)
-
 api.add_resource(CharacterFightById,'/api/v1/fight/<id>')
-
+class Flee(Resource):
+    def get(self):
+        character_id = session.get('character_id')
+        character = Character.query.filter_by(id=character_id).first()
+        if not character:
+            return make_response({"error": "No character found"}, 404)
+        ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
+        if not ongoing_fight:
+            return make_response({"error": "No Fight found"}, 408)
+        ongoing_fight.status = 'Defeat'
+        db.session.commit()
+        return make_response({"Message":"You Ran"},202)
+api.add_resource(Flee,'/api/v1/flee')
 class Fights(Resource):
     def get(self):
         all_fights = [f.to_dict(rules={
@@ -114,6 +148,176 @@ class Fights(Resource):
             }) for f in Fight.query.all()]
         return make_response(all_fights)
 api.add_resource(Fights,'/api/v1/fight')
+
+class PlayCardById(Resource):
+    def get(self,id):
+        character_id = session.get('character_id')
+        deck = Deck.query.filter_by(card_id=id, character_id=character_id, status='Drawn').first() #small bug where you can play a card thats not drawn if a card you have drawn is the same card. cancels itself out because you techncially have that card drawn. WIP
+        if deck:
+            card = deck.card
+            character = Character.query.filter_by(id=character_id).first()
+            ongoing_fight = Fight.query.filter_by(character_id=character.id, status='Ongoing').first()
+            if ongoing_fight:
+                if character.mana >= card.mana_cost and character.hitpoints > card.hp_cost:
+                    character.mana -= card.mana_cost
+                    character.hitpoints -= card.hp_cost
+                    max_hitpoints = character.max_hitpoints
+                    character.hitpoints = min(character.hitpoints + card.heal, max_hitpoints)
+                    max_mana = character.max_mana
+                    character.mana = min(character.mana + card.mana_gain, max_mana)
+                    character.block += card.block
+
+                    mob_damage = card.damage
+                    if ongoing_fight.block > 0:
+                        block_damage = min(ongoing_fight.block, mob_damage)
+                        ongoing_fight.block -= block_damage
+                        mob_damage -= block_damage
+                    if mob_damage > 0:
+                        ongoing_fight.hitpoints -= mob_damage
+                        if ongoing_fight.hitpoints <= 0:
+                            ongoing_fight.status = 'Victory'
+                            character.block = 0
+                            victory_gold = ongoing_fight.max_hitpoints // 2
+                            victory_experience = ongoing_fight.max_hitpoints
+                            character.experience += victory_experience
+                            character.gold += victory_gold
+                            db.session.commit()
+                            if character.experience >= character.experience_cap:
+                                character.level += 1
+                                character.experience = 0
+                                character.skill_point += 1
+                                character.mana = character.max_mana
+                                character.hitpoints = character.max_hitpoints
+                                db.session.commit()
+                                next_level = LevelChart.query.filter_by(level=character.level).first()
+                                if next_level:
+                                    character.experience_cap = next_level.experience_cap
+                                    db.session.commit()
+                            character.shuffle_deck_all()
+                            db.session.commit()
+                            return make_response(ongoing_fight.to_dict(rules={'-character.user',}),202)
+                            # return make_response({
+                            #     "Victory": "You defeated the mob",
+                            #     "Gold": victory_gold,
+                            #     "Experience": victory_experience,
+                            #     "Level": character.level
+                            # }, 202)
+                    deck.status = 'Discarded'
+                    db.session.commit()
+                    return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)
+                else:
+                    return make_response({"error": "Not enough mana or hitpoints to play this card"}, 400)
+            else:
+                return make_response({"error": "No onGoing fight"},418)
+        else:
+            return make_response({"error":"Character does not have this Drawn"},404)
+api.add_resource(PlayCardById,'/api/v1/playcard/<id>')
+class EndTurnById(Resource):
+    def get(self,id):
+        ongoing_fight = Fight.query.filter_by(id=id, status='Ongoing').first()
+        if ongoing_fight:
+            character = ongoing_fight.character
+            drawn_mob_decks = [mob_deck for mob_deck in ongoing_fight.in_fight_mob_decks if mob_deck.status == 'Drawn']
+            for mob_deck in drawn_mob_decks:
+                card = mob_deck.card
+                max_hitpoints = ongoing_fight.max_hitpoints
+                ongoing_fight.hitpoints = min(ongoing_fight.hitpoints + card.heal, max_hitpoints)
+                max_mana = ongoing_fight.max_mana
+                ongoing_fight.mana = min(ongoing_fight.mana + card.mana_gain, max_mana)
+                ongoing_fight.block += card.block
+
+                character_damage = card.damage
+                if character.block > 0:
+                    block_damage = min(character.block, character_damage)
+                    character.block -= block_damage
+                    character_damage -= block_damage
+                if character_damage > 0:
+                    character.hitpoints -= character_damage
+                    if character.hitpoints <= 0:
+                        ongoing_fight.status = 'Defeat'
+                        db.session.delete(character)
+                        db.session.commit()
+                        return make_response({"Defeat": "Character has been Slayn"},418)
+                mob_deck.status = 'Discarded'
+            character.mana = min(character.mana + int(0.1 * character.max_mana), character.max_mana)
+            ongoing_fight.turn += 1
+            ongoing_fight.discard_hand()
+            character.discard_hand()
+            ongoing_fight.draw_hand()
+            character.draw_hand()
+            db.session.commit()
+            return make_response(ongoing_fight.to_dict(rules={'-character.user'}), 200)
+        else:
+            return make_response({"error": "This is not an ongoing fight"}, 404)
+api.add_resource(EndTurnById,'/api/v1/endturn/<id>')
+class ShopThree(Resource):
+    def get(self):
+        character_id = session.get('character_id')
+        character = Character.query.filter_by(id=character_id).first()
+        if character.gold >= 100:
+            min_card_id = 17
+            available_cards = (
+            db.session.query(Card)
+            .filter(Card.id >= min_card_id)
+            .order_by(db.func.random())
+            .limit(3)
+            .all()
+        )
+            character.gold -= 100
+            db.session.commit()
+            response_data = {
+                'character': character.to_dict(),
+                'available_cards': [card.to_dict(rules={'-decks',"-mob_decks",'-updated_at','-created_at'}) for card in available_cards],
+            }
+            return make_response(response_data, 200)
+        else:
+            return make_response({"Message": "Not Enough Gold"},402)
+api.add_resource(ShopThree,'/api/v1/shop100')
+class ShopNine(Resource):
+    def get(self):
+        character_id = session.get('character_id')
+        character = Character.query.filter_by(id=character_id).first()
+        if character.gold >= 300:
+            min_card_id = 17
+            available_cards = (
+            db.session.query(Card)
+            .filter(Card.id >= min_card_id)
+            .order_by(db.func.random())
+            .limit(9)
+            .all()
+        )
+            character.gold -= 300
+            db.session.commit()
+            response_data = {
+                'character': character.to_dict(),
+                'available_cards': [card.to_dict(rules={'-decks',"-mob_decks",'-updated_at','-created_at'}) for card in available_cards],
+            }
+            return make_response(response_data, 200)
+        else:
+            return make_response({"Message": "Not Enough Gold"},402)
+api.add_resource(ShopNine,'/api/v1/shop300')
+class BuyCardById(Resource):
+    def get(self,id):
+        card = Card.query.filter_by(id=id).first()
+        if not card:
+            return make_response({"message": "Card not found"}, 404)
+        character_id = session.get('character_id')
+        character = Character.query.filter_by(id=character_id).first()
+        if not character:
+            return make_response({"message": "Character not found"}, 404)
+        if character.gold >= card.gold_cost:
+            character.gold -= card.gold_cost
+            new_deck_entry = Deck(character=character, card=card)
+            db.session.add(new_deck_entry)
+            db.session.commit()
+            response_data = {
+                'character': character.to_dict(),
+                'new_card': card.to_dict(rules={'-decks',"-mob_decks",'-updated_at','-created_at'}),
+            }
+            return make_response(response_data, 200)
+        else:
+            return make_response({"message": "Not enough gold to buy the card"}, 402)
+api.add_resource(BuyCardById,'/api/v1/buycard/<id>')
 @app.route('/api/v1/login',methods=['POST'])
 def login():
     data = request.get_json()

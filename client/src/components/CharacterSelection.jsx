@@ -5,9 +5,9 @@ import {useState } from 'react';
 import CharacterCard from "./CharacterCard";
 import CharacterInfo from "./CharacterInfo";
 
-function Home() {
+function CharacterSelection() {
     const [showCreate,setShowCreate] = useState(false)
-    const {setUser,user,setSelectedCharacter, selectedCharacter}= useOutletContext();
+    const {setUser,user,setSelectedCharacter, selectedCharacter,navigate}= useOutletContext();
     const charactersArray = user?.characters
     const charactersPerRow = 4
     const rows = []
@@ -23,6 +23,7 @@ function Home() {
         })
         .then((character) => {
             setSelectedCharacter(character);
+            setShowCreate(false)
             fetch(`/changeChar`,{
                 method:'POST',
                 headers:{
@@ -68,11 +69,12 @@ function Home() {
     }
 
     function handleButtonForm(){
+        setSelectedCharacter(null)
         setShowCreate(!showCreate)
     }
 
     const signupSchema = yup.object().shape({
-        character_name: yup.string().min(1,'Must Be?').max(50,'Less is better.'),
+        character_name: yup.string().min(1,'Must Be?').max(16,'Less is better.'),
     })
 
     const formik = useFormik({
@@ -135,11 +137,14 @@ function Home() {
             console.log('no character deleted.')
         }
     }
-
+    const handleUnSelect = ()=> {
+        setSelectedCharacter(null)
+    }
     return(
         <section className="character-container">
             {showCreate ? (
                 <form className="selected-character" onSubmit={formik.handleSubmit}>
+                    <>DropDownHereSomeWhereForPic</>
                     <div className='box-input'>
                         <input
                             type="text"
@@ -156,11 +161,13 @@ function Home() {
                     
                 </form>
                 ) : (
-                <CharacterInfo selectedCharacter={selectedCharacter} handleDelete={handleDelete}/>
+                <CharacterInfo selectedCharacter={selectedCharacter}/>
             )}
             <div className="😭">
+                {selectedCharacter && (<button className="🥺" onClick={()=>navigate('/town')}>Go To Town</button>)}
                 {showCreate ?(<button onClick={handleButtonForm} className="🥺">I've changed my mind</button>):(<button  className="🥺" onClick={handleButtonForm}>Create a new character</button>)}
                 {selectedCharacter ? (<button className="🥺" onClick={handleDelete}>Delete Current Character</button>) :(<h2 className="🥺">Please Select A Character</h2>)}
+                {selectedCharacter && (<button className="🥺" onClick={handleUnSelect}>Unselect Current Character</button>)}
             </div>
             <div className="slide-wrapper">
                 <p className="slide-back" onClick={handleSlideBack}>Scroll Back</p>
@@ -173,4 +180,4 @@ function Home() {
         </section>
     );
 }
-export default Home;
+export default CharacterSelection;
