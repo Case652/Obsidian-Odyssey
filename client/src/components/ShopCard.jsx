@@ -1,10 +1,8 @@
 
 import { useLocation } from 'react-router-dom';
-import { useState} from 'react';
 function ShopCard({card,setSelectedCharacter,selectedCharacter,removeFromShowRolledShop}) {
     const location = useLocation();
     const {id,card_name,gold_cost,mana_cost,mana_gain,hp_cost,damage,block,heal,description,image} = card|| {};
-    const [newCard,setNewCard] = useState(null);
     const formattedDescription = description
         .replace('{damage}', damage)
         .replace('{block}', block)

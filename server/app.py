@@ -51,7 +51,7 @@ class Characters(Resource):
         if not user_id:
             return make_response({'error': 'User not logged in'}, 401)
 
-        character = Character(character_name=data['character_name'],user_id=user_id)
+        character = Character(character_name=data['character_name'],image=data['image'],user_id=user_id)
         db.session.add(character)
         db.session.commit()
 

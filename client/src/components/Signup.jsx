@@ -6,8 +6,9 @@ import * as yup from 'yup'
 function Signup() {
     const {setSignup,signup,setUser,navigate} = useOutletContext();
     const signupSchema = yup.object().shape({
-        username: yup.string().min(1,'Must Be?').max(50,'Less is better.'),
-        password: yup.string().min(1,'Must Be?').max(72,'Less is better.'),
+        username: yup.string().min(1,'Must Be?').max(50,'Less is better.').required('Username is required'),
+        password: yup.string().min(1,'Must Be?').max(72,'Less is better.').required('Password is required'),
+        confirmPassword: signup ? yup.string().oneOf([yup.ref('password'), null], 'Passwords must match').required('Confirm Password is required'): undefined,
     })
     const formik = useFormik({
         initialValues:{
@@ -52,6 +53,7 @@ function Signup() {
             signupIn.classList.remove('flip');
         },800)
     }
+    console.log(formik.errors)
     return (
         <section className='signup-in'>
             <div className='form-outline'>
@@ -70,6 +72,7 @@ function Signup() {
                             placeholder=' '
                         />
                         <label htmlFor="username" >Username</label>
+                        {formik.touched.username && formik.errors.username ? (<div className="error">{formik.errors.username}</div>) : null}
                     </div>
                     <div className='box-input'>
                         <input
@@ -81,7 +84,7 @@ function Signup() {
                             required
                             placeholder=' '
                         />
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">Password</label>{formik.touched.password && formik.errors.password ? (<div className="error">{formik.errors.password}</div>) : null}
                     </div>
                     {signup && 
                     <div className='box-input'>
@@ -95,6 +98,7 @@ function Signup() {
                             placeholder=' '
                         />
                         <label htmlFor="confirmPassword">Confirm Password</label>
+                        {formik.touched.confirmPassword && formik.errors.confirmPassword ? (<div className="error">{formik.errors.confirmPassword}</div>) : null}
                     </div>}
                     <button className='login-button' type="submit">{signup ? 'Sign Up': 'Login'}</button>
                 </form>
