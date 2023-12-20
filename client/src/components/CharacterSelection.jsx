@@ -140,7 +140,13 @@ function CharacterSelection() {
         }
     }
     const handleUnSelect = ()=> {
-        setSelectedCharacter(null)
+        fetch('/logoutchar',{
+            method:'DELETE'
+        }).then((r)=>{
+            if (r.ok) {
+            setSelectedCharacter(null)
+            }
+        })
     }
     const imageOptions = [
         "/character/character1.png",

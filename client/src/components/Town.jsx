@@ -45,6 +45,36 @@ function Town() {
     const handleToggleSkillPoints = () => {
         setLeveling(!leveling)
     };
+    const handleUseSkillPoint = (action) => {
+        fetch('/skillpoint',{
+            method: 'POST',
+            headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action }),
+        }).then((r)=>{
+            if (r.ok) {
+                return r.json();
+            } else {
+                throw new Error('failed in upgrade')
+            }
+        })
+        .then((data)=>{
+            setSelectedCharacter(data.character)
+        })
+        .catch((error)=>{
+            console.error('Error',error.message)
+        })
+    }
+    const handleUseHp = () => {
+        handleUseSkillPoint('hp');
+    };
+    const handleUseMana = () => {
+        handleUseSkillPoint('mana');
+    };
+    const handleUseDraw = () => {
+        handleUseSkillPoint('draw');
+    };
     const handleShowShopText=()=>{
         setActiveFilter(activeFilter === 'ShowShop' ? null : 'ShowShop');
         setShowShop(!showShop)
@@ -93,9 +123,9 @@ function Town() {
                 
                 {leveling ? (<div className="panel">
                     <>Spend Your Skills Here!</>
-                    <button>1 Point For 10 extra Max Hitpoints(WIP)</button>
-                    <button>1 Point For 10 extra Max Mana(WIP)</button>
-                    <button>5 Point For 1 extra Draw(WIP)</button>
+                    <button onClick={handleUseHp} className={`🎮 ${selectedCharacter.skill_point > 0 ? '🎮🎮' : ''}`}>1 Point For 10 extra Max Hitpoints</button>
+                    <button onClick={handleUseMana} className={`🎮 ${selectedCharacter.skill_point > 0 ? '🎮🎮' : ''}`}>1 Point For 10 extra Max Mana</button>
+                    <button onClick={handleUseDraw} className={`🎮 ${selectedCharacter.skill_point > 4 ? '🎮🎮' : ''}`}>5 Point For 1 extra Draw</button>
                     <button className="🎮" onClick={handleToggleSkillPoints}>Maybe Later</button>
                 </div>
                 ):(<div className="panel">
