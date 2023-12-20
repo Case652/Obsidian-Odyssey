@@ -623,3 +623,10 @@ input:not(:placeholder-shown)+label{
 .error{
   color: rgb(248, 58, 58);
 }
+.message-🥺{
+  color: #fff;
+  background-color: rgba(3, 2, 3, 0.8);
+  border-radius: 20px;
+  padding: 1em;
+  border: double rgb(102, 255, 0);
+}

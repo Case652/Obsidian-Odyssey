@@ -508,7 +508,7 @@ if __name__ == '__main__':
                 "max_hitpoints": "25",
                 "mana": "25",
                 "max_mana": "25",
-                "draw": "1",
+                "draw": "2",
                 "block": "0",
                 "mob_decks": [
                     {"card_name": "Goblin Scratch"},

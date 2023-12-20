@@ -146,17 +146,17 @@ function Town() {
                 {showShop &&<p></p>}
                 {showShop &&<p className="message">*The audacity to demand payment for merely glimpsing what they peddle. *</p>}
                 {showShop &&<p></p>}
-                {showShop &&<button className="🥺" onClick={handleShowShopText}>Walk away</button>}
-                {showShop &&<button className="🥺" onClick={handleShopRoll100}>Slip him 100 gold</button>}
-                {showShop &&<button className="🥺" onClick={handleShopRoll300}> Chuck 300 gold at him</button>}
+                {showShop &&<button className="message-🥺" onClick={handleShowShopText}>Walk away</button>}
+                {showShop &&<button className="message-🥺" onClick={handleShopRoll100}>Slip him 100 gold</button>}
+                {showShop &&<button className="message-🥺" onClick={handleShopRoll300}> Chuck 300 gold at him</button>}
 
                 {renderCards}
             </div>) : (
                 <div className="cards-container">
                     
-                    {showRolledShop && showShop && (<button className="🥺" onClick={handleShopRoll100}>Slip him another 100 gold </button>)}
-                    {showRolledShop && showShop && (<button className="🥺" onClick={handleShopRoll300}> Waste 300 gold</button>)}
-                    {showRolledShop && showShop &&<button className="🥺" onClick={handleShowShopText}>Walk away</button>}
+                    {showRolledShop && showShop && (<button className="message-🥺" onClick={handleShopRoll100}>Slip him another 100 gold </button>)}
+                    {showRolledShop && showShop && (<button className="message-🥺" onClick={handleShopRoll300}> Waste 300 gold</button>)}
+                    {showRolledShop && showShop &&<button className="message-🥺" onClick={handleShowShopText}>Walk away</button>}
                     {renderShop}
                     {renderCards}
                 </div>

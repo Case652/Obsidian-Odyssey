@@ -1,12 +1,5 @@
 # Phase 4 Full-Stack Application Project Template
 
-## Learning Goals
-
-- Discuss the basic directory structure of a full-stack Flask/React application.
-- Carry out the first steps in creating your Phase 4 project.
-
----
-
 ## Introduction
 
 Fork and clone this lesson for a template for your full-stack application. Take
