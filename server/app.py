@@ -30,7 +30,6 @@ class Users(Resource):
         all_users = [u.to_dict() for u in User.query.all()]
         return make_response(all_users)
 api.add_resource(Users,'/api/v1/users')
-
 class Characters(Resource):
     def get(self):
         all_characters = [c.to_dict(rules={
@@ -65,9 +64,7 @@ class Characters(Resource):
 
         session['character_id'] = character.id
         return make_response(character.to_dict(rules={'-user',}),201)
-
-api.add_resource(Characters,'/api/v1/character')
-
+api.add_resource(Characters,'/api/v1/character',endpoint="character")
 class CharacterById(Resource):
     def get(self,id):
         character = Character.query.get(id)
@@ -87,8 +84,7 @@ class CharacterById(Resource):
         db.session.commit()
         session['character_id'] = None
         return make_response("Can't see me",204)
-
-api.add_resource(CharacterById,'/api/v1/character/<id>')
+api.add_resource(CharacterById,'/api/v1/character/<id>',endpoint="characterid")
 class CharacterFightById(Resource):
     def get(self,id):
         character = Character.query.get(id)
@@ -126,7 +122,7 @@ class CharacterFightById(Resource):
             return make_response(new_fight.to_dict(rules={'-character.user'}), 201)
         else:
             return make_response(ongoing_fight.to_dict(rules={'-character.user',}), 200)
-api.add_resource(CharacterFightById,'/api/v1/fight/<id>')
+api.add_resource(CharacterFightById,'/api/v1/fight/<id>',endpoint="characterfight")
 class Flee(Resource):
     def get(self):
         character_id = session.get('character_id')
@@ -139,7 +135,7 @@ class Flee(Resource):
         ongoing_fight.status = 'Defeat'
         db.session.commit()
         return make_response({"Message":"You Ran"},202)
-api.add_resource(Flee,'/api/v1/flee')
+api.add_resource(Flee,'/api/v1/flee',endpoint="flee")
 class Fights(Resource):
     def get(self):
         all_fights = [f.to_dict(rules={
@@ -148,7 +144,6 @@ class Fights(Resource):
             }) for f in Fight.query.all()]
         return make_response(all_fights)
 api.add_resource(Fights,'/api/v1/fight')
-
 class PlayCardById(Resource):
     def get(self,id):
         character_id = session.get('character_id')
@@ -177,7 +172,7 @@ class PlayCardById(Resource):
                         if ongoing_fight.hitpoints <= 0:
                             ongoing_fight.status = 'Victory'
                             character.block = 0
-                            victory_gold = ongoing_fight.max_hitpoints // 2
+                            victory_gold = ongoing_fight.max_hitpoints * 4
                             victory_experience = ongoing_fight.max_hitpoints
                             character.experience += victory_experience
                             character.gold += victory_gold
@@ -211,7 +206,7 @@ class PlayCardById(Resource):
                 return make_response({"error": "No onGoing fight"},418)
         else:
             return make_response({"error":"Character does not have this Drawn"},404)
-api.add_resource(PlayCardById,'/api/v1/playcard/<id>')
+api.add_resource(PlayCardById,'/api/v1/playcard/<id>',endpoint="playcard")
 class EndTurnById(Resource):
     def get(self,id):
         ongoing_fight = Fight.query.filter_by(id=id, status='Ongoing').first()
@@ -235,6 +230,7 @@ class EndTurnById(Resource):
                     character.hitpoints -= character_damage
                     if character.hitpoints <= 0:
                         ongoing_fight.status = 'Defeat'
+                        session['character_id'] = None
                         db.session.delete(character)
                         db.session.commit()
                         return make_response({"Defeat": "Character has been Slayn"},418)
@@ -249,7 +245,7 @@ class EndTurnById(Resource):
             return make_response(ongoing_fight.to_dict(rules={'-character.user'}), 200)
         else:
             return make_response({"error": "This is not an ongoing fight"}, 404)
-api.add_resource(EndTurnById,'/api/v1/endturn/<id>')
+api.add_resource(EndTurnById,'/api/v1/endturn/<id>',endpoint="endturn")
 class ShopThree(Resource):
     def get(self):
         character_id = session.get('character_id')
@@ -272,7 +268,7 @@ class ShopThree(Resource):
             return make_response(response_data, 200)
         else:
             return make_response({"Message": "Not Enough Gold"},402)
-api.add_resource(ShopThree,'/api/v1/shop100')
+api.add_resource(ShopThree,'/api/v1/shop100',endpoint="shopthree")
 class ShopNine(Resource):
     def get(self):
         character_id = session.get('character_id')
@@ -295,7 +291,48 @@ class ShopNine(Resource):
             return make_response(response_data, 200)
         else:
             return make_response({"Message": "Not Enough Gold"},402)
-api.add_resource(ShopNine,'/api/v1/shop300')
+api.add_resource(ShopNine,'/api/v1/shop300',endpoint="shopnine")
+class UseSkillPoint(Resource):
+    def post(self):
+        data = request.get_json()
+
+        if 'action' not in data:
+            return make_response({'error': '404 not found action'}, 404)
+        character_id = session.get('character_id')
+        character = Character.query.filter_by(id=character_id).first()
+        if not character:
+            return make_response({'error': 'Character not found'}, 404)
+        action = data['action']
+            
+        if action == 'hp':
+            if character.skill_point > 0:
+                character.max_hitpoints += 10
+                character.skill_point -= 1
+            else:
+                return make_response({"Message": "You don't Have a skill point to spend"},402)
+        elif action == 'mana':
+            if character.skill_point > 0:
+                character.max_mana += 10
+                character.skill_point -= 1
+            else:
+                return make_response({"Message": "You don't Have a skill point to spend"},402)
+        elif action == 'draw':
+            if character.skill_point > 4:
+                character.draw += 1
+                character.skill_point -= 5
+            else:
+                return make_response({"Message": "You don't Have 5 skill points to spend"},402)
+        else:
+            return make_response({'error': 'unknown action'}, 400)
+        character.mana = character.max_mana
+        character.hitpoints = character.max_hitpoints
+        db.session.commit()
+        response_data = {
+            "message": "Successfully upgraded",
+            "character": character.to_dict(rules={'-user',})
+        }
+        return make_response(response_data,200)
+api.add_resource(UseSkillPoint,'/api/v1/skillpoint',endpoint="skillpoint")
 class BuyCardById(Resource):
     def get(self,id):
         card = Card.query.filter_by(id=id).first()
@@ -317,7 +354,7 @@ class BuyCardById(Resource):
             return make_response(response_data, 200)
         else:
             return make_response({"message": "Not enough gold to buy the card"}, 402)
-api.add_resource(BuyCardById,'/api/v1/buycard/<id>')
+api.add_resource(BuyCardById,'/api/v1/buycard/<id>',endpoint="buycard")
 @app.route('/api/v1/login',methods=['POST'])
 def login():
     data = request.get_json()
@@ -374,10 +411,18 @@ def logout():
     session['user_id'] = None
     session['character_id'] = None
     return make_response('',204)
+@app.route('/api/v1/logoutchar',methods=['DELETE'])
+def logoutchar():
+    session['character_id'] = None
+    return make_response('',204)
 @app.route('/')
 def index():
     return '<h1>Project Server</h1>'
-
-
+@app.before_request
+def check_logged_id():
+    if request.endpoint in ['character','characterid'] and not session.get('user_id'):
+        return make_response({'error':'Unauthorized, Must be logged In'},401)
+    if request.endpoint in ['characterfight','playcard','endturn','shopthree','shopnine','skillpoint','buycard','flee'] and not session.get('character_id'):
+        return make_response({'error': 'Unauthorized, Must be playing a character'},401)
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
