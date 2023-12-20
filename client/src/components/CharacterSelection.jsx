@@ -1,5 +1,5 @@
 import {useOutletContext} from "react-router-dom";
-import { useFormik } from 'formik';
+import { useFormik} from 'formik';
 import * as yup from 'yup'
 import {useState } from 'react';
 import CharacterCard from "./CharacterCard";
@@ -73,15 +73,17 @@ function CharacterSelection() {
         setShowCreate(!showCreate)
     }
 
-    const signupSchema = yup.object().shape({
-        character_name: yup.string().min(1,'Must Be?').max(16,'Less is better.'),
+    const characterSchema = yup.object().shape({
+        image: yup.string().required('Please select an image'),
+        character_name: yup.string().min(1,'Must Be?').max(16,'Less is better.').required('Character name is required'),
     })
 
     const formik = useFormik({
         initialValues: {
+            image: '',
             character_name: '',
         },
-        validationSchema: signupSchema,
+        validationSchema: characterSchema,
         onSubmit: (values) => {
             fetch('/character',{
                 method: 'POST',
@@ -140,11 +142,37 @@ function CharacterSelection() {
     const handleUnSelect = ()=> {
         setSelectedCharacter(null)
     }
+    const imageOptions = [
+        "/character/character1.png",
+        "/character/character2.png",
+        "/character/character3.png",
+        "/character/character4.png",
+        "/character/character5.png",
+        "/character/character6.png",
+        "/character/character7.png",
+        "/character/character8.png",
+        "/character/character9.png",
+        "/character/character10.png",
+        "/character/character11.png",
+    ]
     return(
         <section className="character-container">
             {showCreate ? (
                 <form className="selected-character" onSubmit={formik.handleSubmit}>
-                    <>DropDownHereSomeWhereForPic</>
+                    {formik.values.image ? (<img src={formik.values.image} alt="Preview" />) :(<img></img>)}
+                    <div className='box-input'>
+                        <select
+                            id="image"
+                            name="image"
+                            onChange={formik.handleChange}
+                            value={formik.values.image}
+                            required
+                        >
+                        <option value="" disabled>Select an image</option>
+                        {imageOptions.map((option) => (<option key={option} value={option}>{`Character Look ${imageOptions.indexOf(option) + 1}`}</option>))}
+                        </select>
+                        {formik.touched.image && formik.errors.image ? (<div className="error">{formik.errors.image}</div>) : null}
+                    </div>
                     <div className='box-input'>
                         <input
                             type="text"
@@ -156,9 +184,9 @@ function CharacterSelection() {
                             placeholder=' '
                         />
                         <label htmlFor="character_name" >Character Name</label>
+                        {formik.touched.character_name && formik.errors.character_name ? (<div className="error">{formik.errors.character_name}</div>) : null}
                     </div>
                     <button className='login-button' type="submit">Create</button>
-                    
                 </form>
                 ) : (
                 <CharacterInfo selectedCharacter={selectedCharacter}/>

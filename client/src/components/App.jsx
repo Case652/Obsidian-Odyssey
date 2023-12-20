@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, Outlet,useNavigate } from 'react-router-dom';
-// import { Switch, Route } from "react-router-dom";
-
-import Signup from "./Signup";
+import {Outlet,useNavigate} from 'react-router-dom';
 import Nav from './Nav'
 function App() {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import {useOutletContext} from "react-router-dom";
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import Card from "./Card";
 import ShopCard from "./ShopCard"
 import CharacterInfo from "./CharacterInfo";
