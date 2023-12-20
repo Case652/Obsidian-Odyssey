@@ -1,7 +1,24 @@
 import {useOutletContext} from "react-router-dom";
-
+import React, { useEffect} from "react";
 function Defeat() {
-    const {navigate}= useOutletContext();
+    const {navigate,setUser}= useOutletContext();
+    useEffect(() => {
+        fetch('/authorized')
+        .then((r) => {
+            if (r.ok) {
+                return r.json();
+            } else if (r.status === 404) {
+                navigate('/signup');
+                throw new Error('User not found');
+            } else {
+                throw new Error('Unexpected In Auth');
+            }
+        })
+        .then((user) => {
+            setUser(user);
+        })
+        .catch((error) => console.error(error));
+    }, [])
     return(
         <div className="defeat-container">
             <div>
