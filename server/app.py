@@ -133,6 +133,7 @@ class Flee(Resource):
         if not ongoing_fight:
             return make_response({"error": "No Fight found"}, 408)
         ongoing_fight.status = 'Defeat'
+        character.discard_hand()
         db.session.commit()
         return make_response({"Message":"You Ran"},202)
 api.add_resource(Flee,'/api/v1/flee',endpoint="flee")
