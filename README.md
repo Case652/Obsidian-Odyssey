@@ -1,6 +1,7 @@
 # Obsidian Odyssey ReadMe
 ## Description
-just a website that acts like a card game
+just a website that acts like a card game,
+theres nothing past level 5 for mobs atm.
 ## Setup
 
 ### Running the server:
